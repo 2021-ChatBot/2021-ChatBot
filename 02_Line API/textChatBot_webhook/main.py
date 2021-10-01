@@ -16,18 +16,18 @@ menuMessage = TextSendMessage(text='本系統提供下列功能：\n' \
                                     + '5. 疫調管理\n' \
                                     + '6. 統計報表\n' \
                                     + '請輸入所需選項......')
-receiveMessage = '稍後，我將提供您\n'
-scanQrCodeMessage = TextSendMessage(text = receiveMessage \
+headerMessage = '稍後，我將提供您\n'
+scanQrCodeMessage = TextSendMessage(text = headerMessage \
                                         + '實聯掃碼 具體功能')
-myFootPrintMessage = TextSendMessage(text = receiveMessage \
+myFootPrintMessage = TextSendMessage(text = headerMessage \
                                         + '我的足跡 具體資料')
-myInfoMessage = TextSendMessage(text = receiveMessage \
+myDataMessage = TextSendMessage(text = headerMessage \
                                         + '我的個資 具體資料')
-organizationManagementMessage = TextSendMessage(text = receiveMessage \
+organizationManagementMessage = TextSendMessage(text = headerMessage \
                                         + '組織管理 具體功能')
-epidemicManagementMessage = TextSendMessage(text = receiveMessage \
+epidemicManagementMessage = TextSendMessage(text = headerMessage \
                                         + '疫調管理 具體功能')
-reportMessage = TextSendMessage(text = receiveMessage \
+reportMessage = TextSendMessage(text = headerMessage \
                                         + '統計報表 具體資料')
 errorMessage = TextSendMessage(text='很抱歉，我沒有提供這項服務')
 
@@ -72,7 +72,7 @@ def handle_message(event):
         replyMessages = [lineIdMessage, myFootPrintMessage]
 
     elif (command in ['3', '個資', '我的個資']):
-        replyMessages = [lineIdMessage, myInfoMessage]
+        replyMessages = [lineIdMessage, myDataMessage]
 
     elif (command in ['4', '組織', '組織管理']):
         replyMessages = [lineIdMessage, organizationManagementMessage]
