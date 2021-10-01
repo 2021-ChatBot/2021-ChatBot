@@ -29,7 +29,7 @@ templateMessage = TemplateSendMessage(
         template=CarouselTemplate(
             columns=[
                 CarouselColumn(
-                    thumbnail_image_url='https://firebasestorage.googleapis.com/v0/b/ntut-chatbot.appspot.com/o/2021%E8%AA%B2%E7%A8%8B%E5%B0%88%E6%A1%88%2F2_LineMessageApi%2Fpersonal.png?alt=media&token=6ea46fa5-a356-42a4-805b-6e0a03475646',
+                    thumbnail_image_url='https://firebasestorage.googleapis.com/v0/b/ntut-chatbot.appspot.com/o/2021%E8%AA%B2%E7%A8%8B%E5%B0%88%E6%A1%88%2F2_LineMessageApi%2Fcustomer.png?alt=media&token=db25ab98-bb27-4db2-bbae-d4d395cd354d',
                     title='個人選項專區',
                     text='請點選下列功能',
                     actions=[
@@ -48,7 +48,7 @@ templateMessage = TemplateSendMessage(
                     ]
                 ),
                 CarouselColumn(
-                    thumbnail_image_url='https://firebasestorage.googleapis.com/v0/b/ntut-chatbot.appspot.com/o/2021%E8%AA%B2%E7%A8%8B%E5%B0%88%E6%A1%88%2F2_LineMessageApi%2Fmanage.png?alt=media&token=2a434c35-d370-4a60-af14-1c7c268e6f6f',
+                    thumbnail_image_url='https://firebasestorage.googleapis.com/v0/b/ntut-chatbot.appspot.com/o/2021%E8%AA%B2%E7%A8%8B%E5%B0%88%E6%A1%88%2F2_LineMessageApi%2Fmanager.png?alt=media&token=6d0a44af-bfd1-44f0-aced-e9d42c8d0c5d',
                     title='管理者選項專區',
                     text='請點選下列功能',
                     actions=[
