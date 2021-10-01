@@ -9,18 +9,18 @@ line_bot_api = LineBotApi(channel_access_token)
 # (0) Messages
 welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 > ')
 menuMessage = TextSendMessage(text='請利用主選單，點選您所需要的服務...')
-receiveMessage = '收到，我將提供您\n'
-scanQrCodeMessage = TextSendMessage(text = receiveMessage \
+headerMessage = '收到，我將提供您\n'
+scanQrCodeMessage = TextSendMessage(text = headerMessage \
                                         + '實聯掃碼 具體功能')
-myFootPrintMessage = TextSendMessage(text = receiveMessage \
+myFootPrintMessage = TextSendMessage(text = headerMessage \
                                         + '我的足跡 具體資料')
-myInfoMessage = TextSendMessage(text = receiveMessage \
+myDataMessage = TextSendMessage(text = headerMessage \
                                         + '我的個資 具體資料')
-organizationManagementMessage = TextSendMessage(text = receiveMessage \
+organizationManagementMessage = TextSendMessage(text = headerMessage \
                                         + '組織管理 具體功能')
-epidemicManagementMessage = TextSendMessage(text = receiveMessage \
+epidemicManagementMessage = TextSendMessage(text = headerMessage \
                                         + '疫調管理 具體功能')
-reportMessage = TextSendMessage(text = receiveMessage \
+reportMessage = TextSendMessage(text = headerMessage \
                                         + '統計報表 具體資料')
 errorMessage = TextSendMessage(text='很抱歉，我沒有提供這項服務......')
 
@@ -45,15 +45,8 @@ def lineWebhook(request):
 # (2) Follow Event
 @handler.add(FollowEvent)
 def handle_follow(event):
-
-    lineId = event.source.user_id
-
     replyMessages = [welcomeMessage]
     line_bot_api.reply_message(event.reply_token, replyMessages)
-
-    receiverLineIdList =[lineId]
-    pushMessage = [menuMessage]
-    line_bot_api.multicast(receiverLineIdList, pushMessage)
 
 
 
@@ -72,7 +65,7 @@ def handle_message(event):
         replyMessages = [lineIdMessage, myFootPrintMessage]
 
     elif (command in ['3', '個資', '我的個資']):
-        replyMessages = [lineIdMessage, myInfoMessage]
+        replyMessages = [lineIdMessage, myDataMessage]
 
     elif (command in ['4', '組織', '組織管理']):
         replyMessages = [lineIdMessage, organizationManagementMessage]
@@ -104,7 +97,7 @@ def handle_postback(event):
         replyMessages = [lineIdMessage, myFootPrintMessage]
         
     elif (command == 'myInfo'):
-        replyMessages = [lineIdMessage, myInfoMessage]
+        replyMessages = [lineIdMessage, myDataMessage]
         
     elif (command == 'organizationManagement'):
         replyMessages = [lineIdMessage, organizationManagementMessage]
@@ -114,8 +107,6 @@ def handle_postback(event):
         
     elif (command == 'report'):
         replyMessages = [lineIdMessage, reportMessage]
-
-                                                                                    
+                                                                                  
     receiverLineIdList =[lineId]
-    pushMessage = replyMessages
-    line_bot_api.multicast(receiverLineIdList, pushMessage)
+    line_bot_api.multicast(receiverLineIdList, replyMessages)
