@@ -107,6 +107,5 @@ def handle_postback(event):
         
     elif (command == 'report'):
         replyMessages = [lineIdMessage, reportMessage]
-                                                                                  
-    receiverLineIdList =[lineId]
-    line_bot_api.multicast(receiverLineIdList, replyMessages)
+                                                                                                                                                                 
+    line_bot_api.push_message(lineId, replyMessages)
