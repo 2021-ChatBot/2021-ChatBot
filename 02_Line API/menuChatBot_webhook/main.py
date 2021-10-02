@@ -22,7 +22,7 @@ epidemicManagementMessage = TextSendMessage(text = headerMessage \
                                         + '疫調管理 具體功能')
 reportMessage = TextSendMessage(text = headerMessage \
                                         + '統計報表 具體資料')
-errorMessage = TextSendMessage(text='很抱歉，我沒有提供這項服務......')
+errorMessage = TextSendMessage(text='哦，這超出我的能力範圍......')
 
 
 # (1) Webhook
