@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block content %}
+
+
+<center>
+  <h1 style="color:dodgerblue">{{title}}</h1>
+  <h4>確診顧客 Id: {{mySpreadResponse.lineId}}</h4>
+  <h4>確診時間: {{mySpreadResponse.confirmedTime}}</h4>
+  <h4>傳播強度: {{mySpreadResponse.spreadStrength}}</h4>
+  <br>
+</center>
+
+
+
+
+{% endblock %}
