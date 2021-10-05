@@ -1,7 +1,6 @@
 import dialogflowClient as dialogflow
 from config import channelSecrect,channelAccessToken
 from linebot import WebhookHandler, LineBotApi
-from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
 
 # （0） Line webhook
@@ -12,7 +11,7 @@ def linewebhook(request):
     signature = request.headers.get("X-Line-Signature")
     try:
         handler.handle(body,signature)
-    except InvalidSignatureError:
+    except:
         print("signature error")
     return '200 OK'
 
