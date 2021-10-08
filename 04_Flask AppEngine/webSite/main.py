@@ -69,7 +69,7 @@ def responseMySpread():
     print(confirmedTime)
 
     # pushmessage
-    receiverLineIdList = [inputData["lineId"]]
+    receiverLineIdList = inputData["lineId"]
     notificationModel = {
         "receiverLineIdList":receiverLineIdList,
         "messages": [
