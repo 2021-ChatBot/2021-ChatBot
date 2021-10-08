@@ -32,7 +32,7 @@ def recordFootPrint():
         siteName = config.site[siteId]
         # pushmessage
         notificationModel = {
-            "receiverLineIdList":lineId,
+            "lineId":lineId,
             "messages": [
                     {
                         "messageType": "textTemplate",
@@ -69,9 +69,8 @@ def responseMySpread():
     print(confirmedTime)
 
     # pushmessage
-    receiverLineIdList = inputData["lineId"]
     notificationModel = {
-        "receiverLineIdList":receiverLineIdList,
+        "lineId":inputData["lineId"],
         "messages": [
                 {
                     "messageType": "textTemplate",
