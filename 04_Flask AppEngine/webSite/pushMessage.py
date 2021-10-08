@@ -19,4 +19,4 @@ class Push:
                 templateMessage = self.getTextTemplateMessage(message['content'])
             
             templateMessages.append(templateMessage)
-        self.line_bot_api.push_message(inputModel['receiverLineIdList'], templateMessages)
+        self.line_bot_api.push_message(inputModel['lineId'], templateMessages)
