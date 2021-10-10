@@ -1,40 +1,43 @@
 import os
 import json
+from linebot import LineBotApi
+from linebot.models import TextSendMessage
 from google.cloud import dialogflow
 from google.protobuf.json_format import MessageToJson
-from config import serviceAccountKey,projectId,languageCode
+from config import serviceAccountKey,projectId,languageCode,channelAccessToken
 
-os.environ ["GOOGLE_APPLICATION_CREDENTIALS"] = serviceAccountKey
+os.environ ['GOOGLE_APPLICATION_CREDENTIALS'] = serviceAccountKey
+lineBotApi = LineBotApi(channelAccessToken)
 
-def detectIntentTexts(sessionId, texts):
-    
+def detectIntentTexts(lineId,replyToken,text,eventType):
+
+    # Set session
     sessionClient = dialogflow.SessionsClient()
-    session = sessionClient.session_path(projectId, sessionId)
-    
-    textInput = dialogflow.TextInput(text=texts, language_code=languageCode)
-    queryInput = dialogflow.QueryInput(text=textInput)
-    
+    session = sessionClient.session_path(projectId, lineId)
+
+    # Detect intent
+    if eventType == 'followEvent':
+        eventInput = dialogflow.EventInput(name=text, language_code=languageCode)
+        queryInput = dialogflow.QueryInput(event=eventInput)
+    elif eventType == 'textEvent':
+        textInput = dialogflow.TextInput(text=text, language_code=languageCode)
+        queryInput = dialogflow.QueryInput(text=textInput)
     response = sessionClient.detect_intent(
         request={"session": session, "query_input": queryInput}
     )
     jsonResponse = MessageToJson(response._pb)
     DictResponse = json.loads(jsonResponse)
     
-    return DictResponse['queryResult']
+    # Check action
+    if 'action' in DictResponse['queryResult'] and DictResponse['queryResult']['action'] == "registerAction":
+        dialogflowEvent = 'RegisterSuccess'
+        eventType = 'followEvent'
+        detectIntentTexts(lineId,replyToken,dialogflowEvent,eventType)
 
-
-def eventInput(sessionId, eventName):
-    
-    session_client = dialogflow.SessionsClient()
-    session = session_client.session_path(projectId, sessionId)
-    
-    eventInput = dialogflow.EventInput(name=eventName, language_code=languageCode)
-    queryInput = dialogflow.QueryInput(event=eventInput)
-    
-    response = session_client.detect_intent(
-        request={"session": session, "query_input": queryInput}
-    )
-    jsonResponse = MessageToJson(response._pb)
-    DictResponse = json.loads(jsonResponse)
-    
-    return DictResponse['queryResult']
+    # Line reply messaage
+    else:
+        replyMessages = []
+        for text in range(len(DictResponse['queryResult']['fulfillmentMessages'])):
+            message = TextSendMessage(text=DictResponse['queryResult']['fulfillmentMessages'][text]['text']['text'][0])
+            replyMessages.append(message)
+        lineBotApi.reply_message(replyToken,replyMessages)

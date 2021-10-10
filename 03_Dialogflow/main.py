@@ -1,56 +1,81 @@
 import dialogflowClient as dialogflow
+import richMenuController as richMenu
 from config import channelSecrect,channelAccessToken
 from linebot import WebhookHandler, LineBotApi
-from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage, PostbackEvent
 
-# （0） Line webhook
+# （0） Messages
+welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 > ')
+menuMessage = TextSendMessage(text='請利用主選單，點選您所需要的服務...')
+headerMessage = '收到，我將提供您\n'
+scanQrCodeMessage = TextSendMessage(text = headerMessage \
+                                        + '實聯掃碼 具體功能')
+myFootPrintMessage = TextSendMessage(text = headerMessage \
+                                        + '我的足跡 具體資料')
+myDataMessage = TextSendMessage(text = headerMessage \
+                                        + '我的個資 具體資料')
+organizationManagementMessage = TextSendMessage(text = headerMessage \
+                                        + '組織管理 具體功能')
+epidemicManagementMessage = TextSendMessage(text = headerMessage \
+                                        + '疫調管理 具體功能')
+reportMessage = TextSendMessage(text = headerMessage \
+                                        + '統計報表 具體資料')
+
+# （1） Line webhook
 handler = WebhookHandler(channelSecrect)
-line = LineBotApi(channelAccessToken)
+lineBotApi = LineBotApi(channelAccessToken)
 def linewebhook(request):
-    body = request.get_data(as_text=True)
     signature = request.headers.get("X-Line-Signature")
+    body = request.get_data(as_text=True)
     try:
         handler.handle(body,signature)
-    except:
+    except InvalidSignatureError:
         print("signature error")
     return '200 OK'
 
-# （1） Follow event
+# （2） Follow event
 @handler.add(FollowEvent)
 def handle_follow(event):
-    sessionId = event.source.user_id
-    welcomeEvent = "Welcome"
-    response = dialogflow.eventInput(sessionId,welcomeEvent)
-    replyMessages = []
-    for text in range(len(response['fulfillmentMessages'])):
-        message = TextSendMessage(text=response['fulfillmentMessages'][text]['text']['text'][0])
-        replyMessages.append(message)
-    line.reply_message(event.reply_token,replyMessages)
+    lineId = event.source.user_id
+    replyToken = event.reply_token
+    text = 'registerMember'
+    eventType = 'followEvent'
+    richMenu.create(lineId,channelAccessToken)
+    dialogflow.detectIntentTexts(lineId, replyToken, text, eventType)
     
-# （2） Message event
+    
+# （3） Message event
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    # （2-1） Dialogflow：input
-    sessionId = event.source.user_id
+    lineId = event.source.user_id
+    replyToken = event.reply_token
     text = event.message.text
-    response = dialogflow.detectIntentTexts(sessionId,text)
-    
-    # （2-2） Dialogflow：Check action
-    if 'action' in response:
-        if response['action'] == "askName" and response['parameters']['any']!="":
-            followUpEvent = "RegisterSuccess"
-            response = dialogflow.eventInput(sessionId,followUpEvent)
-        elif response['action'] == "askAge" and response['parameters']['age']!="":
-            age = int(response['parameters']['age']['amount'])
-            if age >= 18:
-                followUpEvent = "ageEligible"
-            else:
-                followUpEvent = "ageNotEligible"
-            response = dialogflow.eventInput(sessionId,followUpEvent)
-            
-    # （2-3） Dialogflow：output
-    replyMessages = []
-    for text in range(len(response['fulfillmentMessages'])):
-        message = TextSendMessage(text=response['fulfillmentMessages'][text]['text']['text'][0])
-        replyMessages.append(message)   
-    line.reply_message(event.reply_token, replyMessages)
+    eventType = 'textEvent'
+    dialogflow.detectIntentTexts(lineId, replyToken, text, eventType)
+
+
+# （4） Postback Event
+@handler.add(PostbackEvent)
+def handle_postback(event):
+    lineId = event.source.user_id
+    postbackData = event.postback.data
+
+    if (postbackData == 'scanQRCode'):
+        replyMessages = [scanQrCodeMessage]
+
+    elif (postbackData == 'myFootPrint'):
+        replyMessages = [myFootPrintMessage]
+
+    elif (postbackData == 'mydata'):
+        replyMessages = [myDataMessage] 
+
+    elif (postbackData == 'organizationManagement'):
+        replyMessages = [organizationManagementMessage]
+
+    elif (postbackData == 'epidemicManagement'):
+        replyMessages = [epidemicManagementMessage]
+
+    elif (postbackData == 'report'):
+        replyMessages = [reportMessage]                                                                                                                                            
+    lineBotApi.push_message(lineId, replyMessages)
