@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+
+<body>
+
+    {% extends "layout.html" %}
+    {% block title %}{{title}}{% endblock %}
+    {% block content %}
+
+    <a class="button is-link" href="./memberList?lineId={{lineId}}">成員列表</a>
+    <a class="button is-link" href="./storeList?lineId={{lineId}}">店家列表</a>
+
+    <h1 class="title">店家列表</h1>
+    <div id="siteList">
+        <table>
+            <thead>
+                <tr>
+                    <th>店家編號</th>
+                    <th>店家名稱</th>
+                    <th>QRCode</th>
+                    <th>註冊日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for store in storesData%}
+                <tr>
+                    <td>{{store['id']}}</td>
+                    <td>{{store['storeName']}}</td>
+                    <td>
+                      <form action="" method="POST" name="QRcode">
+                        <input type="hidden"  value="{{store['name']}}" name="siteName" class="input" required="required" />
+                        <input type="hidden"  value="{{store['id']}}" name="siteId" class="input" required="required" />
+                        <input type="hidden"  value="{{store['qrCode_base64']}}" name="qrCode_base64" class="input" required="required" />
+                        <div class="control">
+                          <button class="button is-primary">取得QRcode</button>
+                        </div>
+                      </form>
+                    </td>
+                    <td>{{store['timestamp']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+
+    {% endblock %}
+</body>
+
+</html>

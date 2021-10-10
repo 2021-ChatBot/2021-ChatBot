@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成員列表</title>
+</head>
+
+<body>
+
+    {% extends "layout.html" %}
+    {% block title %}列表{% endblock %}
+    {% block content %}
+
+    <a class="button is-link" href="./memberList?lineId={{lineId}}">成員列表</a>
+    <a class="button is-link" href="./siteList?lineId={{lineId}}">店家列表</a>
+
+    <h1 class="title">成員列表</h1>
+
+    <div>
+        <table>
+            <thead>
+                <tr>
+                    <th>姓名</th>
+                    <th>身分</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for memberData in memberDataList%}
+                <tr>
+                    <td>{{memberData['name']}}</td>
+                    <td>{{memberData['role']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    {% endblock %}
+</body>
+
+</html>

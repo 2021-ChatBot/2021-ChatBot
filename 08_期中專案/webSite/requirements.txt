@@ -1,0 +1,4 @@
+Flask
+line-bot-sdk
+firebase_admin
+pandas
