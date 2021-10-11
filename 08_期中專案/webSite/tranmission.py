@@ -60,7 +60,7 @@ class TransmissionTracker:
             site_visitList = self.__firebaseApi.getfootprintsOfSiteBySiteId(siteId)
         except Exception:
             site_visitList=[]
-        # response = Firebase().getFootprintsBySiteId({"siteId":siteId})
+       
         site_visitList = sorted(site_visitList, key=lambda k: k['timestamp'])
 
         for i in range(len(site_visitList)):
