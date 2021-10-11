@@ -36,8 +36,8 @@ def lineWebhook(request):
     # handle webhook body
     try:
         handler.handle(body, signature)
-    except InvalidSignatureError:
-        abort(400)
+    except InvalidSignatureError as e:
+        print(e)
 
     return '200 OK'
 
