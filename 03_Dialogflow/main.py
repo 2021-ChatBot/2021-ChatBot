@@ -6,8 +6,6 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage, PostbackEvent
 
 # （0） Messages
-welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 > ')
-menuMessage = TextSendMessage(text='請利用主選單，點選您所需要的服務...')
 headerMessage = '收到，我將提供您\n'
 scanQrCodeMessage = TextSendMessage(text = headerMessage \
                                         + '實聯掃碼 具體功能')
@@ -38,44 +36,53 @@ def linewebhook(request):
 @handler.add(FollowEvent)
 def handle_follow(event):
     lineId = event.source.user_id
+    eventName = 'registerMember'
     replyToken = event.reply_token
-    text = 'registerMember'
-    eventType = 'followEvent'
     richMenu.create(lineId,channelAccessToken)
-    dialogflow.detectIntentTexts(lineId, replyToken, text, eventType)
-    
+    response = dialogflow.detectIntent(lineId, False, eventName)
+    handle_dialogflow(response,replyToken)
     
 # （3） Message event
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     lineId = event.source.user_id
-    replyToken = event.reply_token
     text = event.message.text
-    eventType = 'textEvent'
-    dialogflow.detectIntentTexts(lineId, replyToken, text, eventType)
-
+    replyToken = event.reply_token
+    response = dialogflow.detectIntent(lineId, text, False)
+    if 'action' in response and response['action'] == "registerAction":
+        eventName = 'RegisterSuccess'
+        memberName = response['parameters']['any']
+        apiResponse = postMemberFlow(lineId,memberName)
+        print(apiResponse)
+        response = dialogflow.detectIntent(lineId, False, eventName)
+    handle_dialogflow(response,replyToken)
 
 # （4） Postback Event
 @handler.add(PostbackEvent)
 def handle_postback(event):
-    lineId = event.source.user_id
+    replyToken = event.reply_token
     postbackData = event.postback.data
-
     if (postbackData == 'scanQRCode'):
         replyMessages = [scanQrCodeMessage]
-
     elif (postbackData == 'myFootPrint'):
         replyMessages = [myFootPrintMessage]
-
     elif (postbackData == 'mydata'):
         replyMessages = [myDataMessage] 
-
     elif (postbackData == 'organizationManagement'):
         replyMessages = [organizationManagementMessage]
-
     elif (postbackData == 'epidemicManagement'):
         replyMessages = [epidemicManagementMessage]
-
     elif (postbackData == 'report'):
         replyMessages = [reportMessage]                                                                                                                                            
-    lineBotApi.push_message(lineId, replyMessages)
+    lineBotApi.reply_message(replyToken,replyMessages)
+
+def handle_dialogflow(queryResult,replyToken):
+    replyMessages = []
+    for text in range(len(queryResult['fulfillmentMessages'])):
+        message = TextSendMessage(text=queryResult['fulfillmentMessages'][text]['text']['text'][0])
+        replyMessages.append(message)
+    lineBotApi.reply_message(replyToken,replyMessages)
+
+def postMemberFlow(lineId,name):
+    response = {"member":{'007',lineId,name}}
+    return response
