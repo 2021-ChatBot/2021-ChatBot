@@ -8,7 +8,7 @@ from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessa
 # （0） Messages
 welcomeMessage = TextSendMessage(text = '歡迎加入 < 智能防疫社群 > ')
 registerHandleMessage = TextSendMessage(text = '正在為你註冊綁定')
-registerSuccessMessage = '你好，已完成註冊綁定'
+registerSuccessMessage = '已完成註冊綁定'
 headerMessage = '收到，我將提供您\n'
 scanQrCodeMessage = TextSendMessage(text = headerMessage \
                                         + '實聯掃碼 具體功能')
@@ -80,9 +80,11 @@ def handle_queryResult(queryResult, replyToken, lineId, replyMessages):
         lineBotApi.push_message(lineId, [registerHandleMessage])
         memberName = queryResult['parameters']['person']['name']
         apiResponse = postMemberFlow(lineId, memberName)
-        print(apiResponse)
-        message = TextSendMessage(text = memberName + registerSuccessMessage)
-        replyMessages.append(message)                                                                                              
+        registerFinishMessage = registerSuccessMessage + '\nmemberId=' + apiResponse['member']['id'] \
+                                                       + '\nname=' + apiResponse['member']['name'] \
+                                                       + '\nlineId=' + apiResponse['member']['lineId']
+        message = TextSendMessage(text = registerFinishMessage)
+        replyMessages.append(message)                                                                                                         
     else:
         for text in range(len(queryResult['fulfillmentMessages'])):
             message = TextSendMessage(text = queryResult['fulfillmentMessages'][text]['text']['text'][0])
