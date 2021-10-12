@@ -80,9 +80,9 @@ def handle_queryResult(queryResult, replyToken, lineId, replyMessages):
         lineBotApi.push_message(lineId, [registerHandleMessage])
         memberName = queryResult['parameters']['person']['name']
         apiResponse = postMemberFlow(lineId, memberName)
-        registerFinishMessage = registerSuccessMessage + '\nmemberId=' + apiResponse['member']['id'] \
-                                                       + '\nname=' + apiResponse['member']['name'] \
-                                                       + '\nlineId=' + apiResponse['member']['lineId']
+        registerFinishMessage = registerSuccessMessage + '\n' + 'memberId=' + apiResponse['member']['id'] \
+                                                       + '\n' + 'name=' + apiResponse['member']['name'] \
+                                                       + '\n' + 'lineId=' + apiResponse['member']['lineId']
         message = TextSendMessage(text = registerFinishMessage)
         replyMessages.append(message)                                                                                                         
     else:
