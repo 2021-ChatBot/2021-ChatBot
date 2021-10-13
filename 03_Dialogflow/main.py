@@ -85,12 +85,11 @@ def handle_queryResult(queryResult, lineId):
                                         + 'lineId=' + member['lineId']
         )
         pushMessages.append(message)
-        lineBotApi.push_message(lineId, pushMessages)
     else:
         for text in range(len(queryResult['fulfillmentMessages'])):
             message = TextSendMessage(text = queryResult['fulfillmentMessages'][text]['text']['text'][0])
             pushMessages.append(message)
-        lineBotApi.push_message(lineId, pushMessages)
+    lineBotApi.push_message(lineId, pushMessages)
 
 def postMemberFlow(lineId, name):
     member = {'id': '007', 'lineId': lineId, 'name': name}
