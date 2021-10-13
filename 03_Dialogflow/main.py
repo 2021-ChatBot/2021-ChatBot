@@ -7,6 +7,7 @@ from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessa
 
 # （0） Messages
 welcomeMessage = TextSendMessage(text = '歡迎加入 < 智能防疫社群 > ')
+menuMessage = TextSendMessage(text='請利用主選單，點選您所需要的服務...')
 registerHandleMessage = TextSendMessage(text = '正在為你註冊綁定')
 registerSuccessText = '已完成註冊綁定\n'
 headerText = '收到，我將提供您\n'
@@ -26,6 +27,7 @@ reportMessage = TextSendMessage(text = headerText \
 # （1） Line webhook
 handler = WebhookHandler(channelSecrect)
 lineBotApi = LineBotApi(channelAccessToken)
+
 def linewebhook(request):
     signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text = True)
@@ -42,8 +44,8 @@ def handle_follow(event):
     replyToken = event.reply_token
     richMenu.create(lineId, channelAccessToken)
     lineBotApi.reply_message(replyToken, welcomeMessage)
-    eventName = 'followEvent'
-    queryResult = dialogflow.detectIntent(lineId, False, eventName)
+    dialogflowEvent = 'followEvent'
+    queryResult = dialogflow.detectIntent(lineId, False, dialogflowEvent)
     handle_queryResult(queryResult, lineId)
     
 # （3） Message event
@@ -60,36 +62,37 @@ def handle_postback(event):
     replyToken = event.reply_token
     postbackData = event.postback.data
     if (postbackData == 'scanQRCode'):
-        replyMessages = [scanQrCodeMessage]
+        messages = [scanQrCodeMessage]
     elif (postbackData == 'myFootPrint'):
-        replyMessages = [myFootPrintMessage]
+        messages = [myFootPrintMessage]
     elif (postbackData == 'mydata'):
-        replyMessages = [myDataMessage] 
+        messages = [myDataMessage] 
     elif (postbackData == 'organizationManagement'):
-        replyMessages = [organizationManagementMessage]
+        messages = [organizationManagementMessage]
     elif (postbackData == 'epidemicManagement'):
-        replyMessages = [epidemicManagementMessage]
+        messages = [epidemicManagementMessage]
     elif (postbackData == 'report'):
-        replyMessages = [reportMessage]                                                                                                                                            
-    lineBotApi.reply_message(replyToken, replyMessages)
+        messages = [reportMessage]                                                                                                                                            
+    lineBotApi.reply_message(replyToken, messages)
 
 def handle_queryResult(queryResult, lineId):
-    pushMessages = []
     if 'action' in queryResult and queryResult['action'] == "registerAction":
-        lineBotApi.push_message(lineId, registerHandleMessage)
-        memberName = queryResult['parameters']['person']['name']
-        member = postMemberFlow(lineId, memberName)
-        message = TextSendMessage(
-            text = registerSuccessText  + 'memberId=' + member['id'] + '\n' \
-                                        + 'name=' + member['name'] + '\n' \
-                                        + 'lineId=' + member['lineId']
-        )
-        pushMessages.append(message)
-    else:
-        for text in range(len(queryResult['fulfillmentMessages'])):
-            message = TextSendMessage(text = queryResult['fulfillmentMessages'][text]['text']['text'][0])
-            pushMessages.append(message)
-    lineBotApi.push_message(lineId, pushMessages)
+        if queryResult['parameters']['person']['name']:
+            lineBotApi.push_message(lineId, registerHandleMessage)
+            memberName = queryResult['parameters']['person']['name']
+            member = postMemberFlow(lineId, memberName)
+            if member:
+                message = TextSendMessage(
+                    text = registerSuccessText + 'memberId=' + member['id'] + '\n' \
+                                               + 'name=' + member['name'] + '\n' \
+                                               + 'lineId=' + member['lineId']
+                )
+                lineBotApi.push_message(lineId, message)
+                lineBotApi.push_message(lineId, menuMessage)
+    if queryResult['fulfillmentMessages']:
+        for n in range(len(queryResult['fulfillmentMessages'])):
+            message = TextSendMessage(text = queryResult['fulfillmentMessages'][n]['text']['text'][0])
+            lineBotApi.push_message(lineId, message)
 
 def postMemberFlow(lineId, name):
     member = {'id': '007', 'lineId': lineId, 'name': name}
