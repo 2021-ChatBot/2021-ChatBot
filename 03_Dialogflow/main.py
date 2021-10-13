@@ -47,6 +47,7 @@ def handle_follow(event):
     dialogflowEvent = 'followEvent'
     queryResult = dialogflow.detectIntent(lineId, False, dialogflowEvent)
     handle_queryResult(queryResult, lineId)
+    lineBotApi.push_message(lineId, menuMessage)
     
 # （3） Message event
 @handler.add(MessageEvent, message=TextMessage)
@@ -88,7 +89,6 @@ def handle_queryResult(queryResult, lineId):
                                                + 'lineId=' + member['lineId']
                 )
                 lineBotApi.push_message(lineId, message)
-                lineBotApi.push_message(lineId, menuMessage)
     if queryResult['fulfillmentMessages']:
         for n in range(len(queryResult['fulfillmentMessages'])):
             message = TextSendMessage(text = queryResult['fulfillmentMessages'][n]['text']['text'][0])
