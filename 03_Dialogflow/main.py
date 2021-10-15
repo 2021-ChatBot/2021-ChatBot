@@ -7,7 +7,6 @@ from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessa
 
 # （0） Messages
 welcomeMessage = TextSendMessage(text = '歡迎加入 < 智能防疫社群 > ')
-menuMessage = TextSendMessage(text='請利用主選單，點選您所需要的服務...')
 registerHandleMessage = TextSendMessage(text = '正在為你註冊綁定')
 registerSuccessText = '已完成註冊綁定\n'
 headerText = '收到，我將提供您\n'
@@ -27,7 +26,6 @@ reportMessage = TextSendMessage(text = headerText \
 # （1） Line webhook
 handler = WebhookHandler(channelSecrect)
 lineBotApi = LineBotApi(channelAccessToken)
-
 def linewebhook(request):
     signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text = True)
@@ -76,6 +74,7 @@ def handle_postback(event):
     lineBotApi.reply_message(replyToken, messages)
 
 def handle_queryResult(queryResult, lineId):
+    print(queryResult)
     if 'action' in queryResult and queryResult['action'] == "registerAction":
         if queryResult['parameters']['person']['name']:
             lineBotApi.push_message(lineId, registerHandleMessage)
@@ -88,7 +87,8 @@ def handle_queryResult(queryResult, lineId):
                                                + 'lineId=' + member['lineId']
                 )
                 lineBotApi.push_message(lineId, message)
-                lineBotApi.push_message(lineId, menuMessage)
+                eventQueryResult = dialogflow.detectIntent(lineId, False, 'menuEvent')
+                handle_queryResult(eventQueryResult, lineId)
 
     if queryResult['fulfillmentMessages']:
         for n in range(len(queryResult['fulfillmentMessages'])):
