@@ -74,7 +74,6 @@ def handle_postback(event):
     lineBotApi.reply_message(replyToken, messages)
 
 def handle_queryResult(queryResult, lineId):
-    print(queryResult)
     if 'action' in queryResult and queryResult['action'] == "registerAction":
         if queryResult['parameters']['person']['name']:
             lineBotApi.push_message(lineId, registerHandleMessage)
@@ -87,8 +86,6 @@ def handle_queryResult(queryResult, lineId):
                                                + 'lineId=' + member['lineId']
                 )
                 lineBotApi.push_message(lineId, message)
-                eventQueryResult = dialogflow.detectIntent(lineId, False, 'menuEvent')
-                handle_queryResult(eventQueryResult, lineId)
 
     if queryResult['fulfillmentMessages']:
         for n in range(len(queryResult['fulfillmentMessages'])):
