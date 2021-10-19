@@ -1,0 +1,84 @@
+{
+  "size": {
+    "width": 1200,
+    "height": 810
+  },
+  "selected": true,
+  "name": "epidemic",
+  "chatBarText": "智能防疫社群主選單",
+  "areas": [
+    {
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/scanQrCode?openExternalBrowser=1&"
+        
+      }
+    },
+    {
+      "bounds": {
+        "x": 400,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/myFootprint?"
+      }
+    },
+    {
+      "bounds": {
+        "x": 800,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri": "/myData?"
+      }
+    },
+    {
+      "bounds": {
+        "x": 0,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri": "/organizationManagement?"
+      }
+    },
+    {
+      "bounds": {
+        "x": 400,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/epidemicSurvey?"
+      }
+    },
+    {
+      "bounds": {
+        "x": 800,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {        
+        "type": "uri",
+        "uri" : "/epidemicReport?"
+      }
+    }
+ ]
+}

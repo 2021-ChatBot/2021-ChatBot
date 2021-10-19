@@ -1,0 +1,51 @@
+{% extends "mobileLayout.html" %}
+
+{% block title %}疫調通報{% endblock %}
+
+{% block bodyContent %}
+
+<body>
+  <h1>{{title}}</h1>
+
+  <div class="form-group">
+    <label for="userList">
+      <h4>確診者：</h4>
+      <select id="companySelect" name="memberId" class="custom-select">
+        <option>
+          <h4>選擇確診者</h4>
+        </option>
+        {% for memberData in membersData %}
+        <option value="{{memberData.id}}">
+          <h4>{{memberData.name}}</h4>
+        </option>
+        {% endfor %}
+      </select>
+    </label>
+    <br>
+    <label for="spreadStrength">
+      <h4>傳播力：</h4>
+    </label>
+    <input type="radio" name="spreadStrength" value="0">0
+    <input type="radio" name="spreadStrength" value="1">1
+    <input type="radio" name="spreadStrength" value="2">2
+    <input type="radio" name="spreadStrength" value="3">3
+    <br>
+    <label for="infectionTime">
+      <h4>感染時間：</h4>
+      <input type="datetime-local" class="form-control" id="confirmedTime" name="confirmedTime" required="required"
+        value="" step="1">
+    </label>
+    <br>
+    <button type="submit" class="btn btn-primary" formaction="/checkFootprintFlow">
+      <h4>疫調</h4>
+    </button>
+    <br>
+  </div>
+
+  </form>
+  </div>
+  </div>
+
+</body>
+
+{% endblock %}
