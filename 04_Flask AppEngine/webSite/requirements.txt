@@ -1,2 +1,0 @@
-Flask
-line-bot-sdk
