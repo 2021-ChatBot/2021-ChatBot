@@ -1,4 +1,4 @@
-projectId = "[your projectId]"
+projectId = "[your project Id]"
 
 #（0）Company
 
@@ -22,8 +22,8 @@ serviceAccountKey = "[your serviceAccountKey.json]"
 #（3）Firestore
 
 firebaseKey = '[your firebaseKey.json]'
-projectName = 'chatbot2021'
-DBName = 'EP_DB'
+projectName = '[your project Id]'
+DBName = '[your DBName]'
 memberTableName = 'members'
 
 #（4）edgePub
