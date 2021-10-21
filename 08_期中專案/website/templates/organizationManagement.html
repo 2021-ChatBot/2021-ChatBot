@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <title>{{title}}</title>
-</head>
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
 
 <body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -19,6 +10,7 @@
             console.log(companyId);
             getCompanyData(companyId);
         }
+
         function getCompanyData(companyId) {
             var requestURL = '/getCompanyData'
             var companyData = {};
@@ -42,6 +34,7 @@
                 }
             });
         }
+
         function createSiteTable(sitesData) {
             siteTable = document.getElementById("siteTable");
 
@@ -51,6 +44,7 @@
 
             }
         }
+
         function createMemberTable(membersData) {
             memberTable = document.getElementById("memberTable");
             memberTable.innerHTML += '<tr><th>' + '成員編號' + '</th><th>' + '成員姓名' + '</th><th>' + '成員角色' + '</th></tr>';
@@ -60,44 +54,54 @@
         }
 
     </script>
-    {% extends "layout.html" %}
-    {% block title %}{{title}}{% endblock %}
-    {% block content %}
+
     <h1 class="title">企業設定</h1>
     <div id="companyList">
         <select id="companySelect" onchange="changeCompany()" style="font-size:20px;" class="custom-select">
-            <option>請選擇企業</option>
-            {% for key, value in companyData.items() %}
-            <option value="{{key}}">{{value}}</option>
+            {% for key, value in companyIdOfName.items() %}
+                {% if key == companyId %}
+                    <option selected="selected" value="{{ key }}">{{ value }}</option>
+                {% else %}
+                    <option selected="selected" value="{{ key }}">{{ value }}</option>
+                {% endif %}
             {% endfor %}
         </select>
     </div>
     <hr size="8px" align="center" width="100%">
     <div id="siteList" style="width: 100%;">
         <h2>商店列表</h2>
-        <table id="siteTable" style="border:2px solid;" class="table table-bordered">
-            <thead>
+        <table style="border:2px solid;" class="table table-bordered">
+            <tbody id="siteTable">
+            <tr>
+                <th>商店編號</th>
+                <th>商店名稱</th>
+            </tr>
+            {% for site in companyData["sitesData"] %}
                 <tr>
-                    <th>商店編號</th>
-                    <th>商店名稱</th>
-                </tr>
-            </thead>
+                    <th> {{ site["id"] }} </th>
+                    <th>{{ site["name"] }}</th>
+                <tr>
+            {% endfor %}
+            </tbody>
         </table>
         <tr>
             <h2>成員列表</h2>
-            <table id="memberTable" style="border:2px solid;" class="table table-bordered">
-                <thead>
+            <table style="border:2px solid;" class="table table-bordered">
+                <tbody id="memberTable">
+                <tr>
+                    <th>成員編號</th>
+                    <th>成員姓名</th>
+                    <th>成員角色</th>
+                </tr>
+                {% for member in companyData["membersData"] %}
                     <tr>
-                        <th>成員編號</th>
-                        <th>成員姓名</th>
-                        <th>成員角色</th>
-                    </tr>
-                </thead>
+                        <th> {{ member["id"] }} </th>
+                        <th>{{ member["name"] }}</th>
+                        <th>{{ member["role"] }}</th>
+                    <tr>
+                {% endfor %}
+                </tbody>
             </table>
     </div>
-
-
-    {% endblock %}
+{% endblock %}
 </body>
-
-</html>
