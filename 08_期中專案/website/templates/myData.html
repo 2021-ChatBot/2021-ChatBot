@@ -1,4 +1,3 @@
-
 {% extends "layout.html" %}
 {% block title %}{{title}}{% endblock %}
 {% block content %}
@@ -14,10 +13,6 @@
 
 <div class="field">
   <label for="lineId" class="label">LineId：{{memberData['lineId']}}</label>
-</div>
-
-<div class="field">
-  <label for="電子信箱" class="label">電子信箱：{{memberData['email']}}</label>
 </div>
 
 {% if memberData['role'] == 'customer' %}
@@ -38,7 +33,6 @@
   <div class="field is-grouped">
     <div class="control">
       <button class="button is-primary is-small">設定</button>
-      
     </div>
   </div>
 </form>
