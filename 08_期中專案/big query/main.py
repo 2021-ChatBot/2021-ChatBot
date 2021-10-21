@@ -7,7 +7,7 @@ def bigQueryProxy(request,context):
     action = BigQueryProxy()
     pubsub_message = base64.b64decode(request["data"]).decode('utf-8')
     dataModel = json.loads(pubsub_message)
-    print(dataModel.keys())
+
     if 'footprint' in dataModel.keys():
         action.insertFootprintData(dataModel["footprint"])
         return {"code":"200","message":"success"}
