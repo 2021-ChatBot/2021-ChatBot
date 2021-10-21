@@ -1,7 +1,7 @@
 import bigQueryConfig
 from google.oauth2 import service_account
 from google.cloud import bigquery
-import datetime
+from datetime import datetime
 import pandas as pd
 
 class BigQueryProxy:
@@ -24,7 +24,7 @@ class BigQueryProxy:
             'id': footprintModel['id'],
             'member': footprintModel['member'],
             'site': footprintModel['site'],
-            'timestamp': datetime.datetime.utcfromtimestamp(footprintModel['timestamp'])
+            'timestamp': datetime.utcfromtimestamp(footprintModel['timestamp'])
         }]
         self.__insertRowToBigdata(tableId, footprintData)
     
@@ -41,11 +41,12 @@ class BigQueryProxy:
         infectedData = [{
             'eventId': infectedModel['eventId'],
             'companyName': infectedModel['companyName'],
-            'infectedMember': infectedModel['member'],
+            'infectedSiteName': infectedModel['infectedSiteName'],
             'infectedSites': infectedModel['infectedSites'],
-            'infectedTime': datetime.datetime.utcfromtimestamp(infectedModel['timestamp']),
+            'infectedTime': datetime.utcfromtimestamp(infectedModel['timestamp']),
             'strength': infectedModel['strength'],
-            'amount': infectedModel['amount']
+            'amount': infectedModel['amount'],
+            'infectedfootprints': infectedModel['infectedfootprints']
         }]
         self.__insertRowToBigdata(tableId, infectedData)
     
