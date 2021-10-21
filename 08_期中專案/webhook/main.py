@@ -6,7 +6,7 @@ from linebot import WebhookHandler, LineBotApi
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
 from config import channelSecrect, channelAccessToken
-
+import threading
 # （0） Messages
 welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 >')
 registerHandleMessage = TextSendMessage(text='正在為你註冊綁定')
@@ -73,5 +73,5 @@ def postMemberFlow(lineId, name) -> dict:
     # firestore 註冊
     memberData = firestore.createMember(name, lineId)
     # big query
-    edgePub.edgePub({"member" : memberData})
+    threading.Thread(target=edgePub.edgePub, args=({"member" : memberData},)).run()
     return memberData
