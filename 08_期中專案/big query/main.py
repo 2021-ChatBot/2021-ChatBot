@@ -21,4 +21,4 @@ def bigQueryProxy(request,context):
         action.updateMember(dataModel["update"])
         return {"code":"200","message":"success"}
     else:
-        return f'Hello World!'
+        return {'code':'404','message':"error"}
