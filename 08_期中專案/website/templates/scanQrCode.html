@@ -1,52 +1,123 @@
-{% extends "layout.html" %}
+{% extends "mobileLayout.html" %}
+
 {% block title %}{{title}}{% endblock %}
-{% block content %}
-<h1 class="title">{{title}}</h1>
 
-<div class="field">
-  <label for="id" class="label">id：{{memberData['id']}}</label>
-</div>
+{% block bodyContent %}
 
-<div class="field">
-  <label for="姓名" class="label">姓名：{{memberData['name']}}</label>
-</div>
+<body>
+  <link rel="stylesheet" href="../static/css/scanQrcode.css" />
+  <script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <div id="container">
+    <h1>{{title}}</h1>
 
-<div class="field">
-  <label for="lineId" class="label">LineId：{{memberData['lineId']}}</label>
-</div>
 
-{% if memberData['role'] == 'customer' %}
-  <div class="field">
-    <label for="角色" class="label">角色：顧客</label>
+    <a id="btn-scan-qr">
+      <img src="">
+    </a>
+
+    <canvas id="qr-canvas"></canvas>
+
+    <div id="qr-result" hidden="">
+      <b>Data:</b> <span id="outputData"></span>
+    </div>
   </div>
-{% else %}
-  <div class="field">
-    <label for="角色" class="label">角色：管理者</label>
-  </div>
-{% endif %}
-
-{% endblock %}
-    <thead>
-      <tr>
-        <th scope="col" width="60px">序號</th>
-        <th scope="col" width="60px">姓名</th>
-        <th scope="col" width="75px">企業</th>
-        <th scope="col" width="90px">商店</th>
-        <th scope="col" width="110px">感染時間</th>
-      </tr>
-    </thead>
-    <tbody id=tbody>
-      {% for infectedMember in infectedList %}
-      <tr>
-        <td>{{loop.index}}</td>
-        <td>{{infectedMember.name}}</td>
-        <td>{{infectedMember.companyName}}</td>
-        <td>{{infectedMember.siteName}}</td>
-        <td>{{infectedMember.timestamp}}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
 </body>
+
+
+
+<script>
+  const video = document.createElement("video");
+  const canvasElement = document.getElementById("qr-canvas");
+  const canvas = canvasElement.getContext("2d");
+
+  const qrResult = document.getElementById("qr-result");
+  const outputData = document.getElementById("outputData");
+  const btnScanQR = document.getElementById("btn-scan-qr");
+
+  let scanning = true;
+
+  function tick() {
+
+    canvasElement.height = video.videoHeight;
+    canvasElement.width = video.videoWidth;
+    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+
+    scanning && requestAnimationFrame(tick);
+
+  }
+
+  function scan() {
+    try {
+      qrcode.decode();
+      console.log("catch");
+    } catch (e) {
+      setTimeout(scan, 300);
+    }
+  }
+
+  function postFootPrint(siteId) {
+    var footPrintData = {
+      'siteId': siteId,
+      'memberId': '{{memberId}}'
+    };
+    $.ajax({
+      url: '/footPrintRecord',
+      data: JSON.stringify(footPrintData),
+      type: 'POST',
+      dataType: "json",
+      success: function (response) {
+        console.log(response);
+        alert(response);
+        openCameraAndScan();
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  function openCameraAndScan() {
+    a = false;
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment" } })
+      .then(function (stream) {
+        scanning = true;
+        qrResult.hidden = true;
+        btnScanQR.hidden = true;
+        canvasElement.hidden = false;
+        video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+        video.srcObject = stream;
+        video.play();
+        tick()
+        scan();
+      });
+  }
+
+  openCameraAndScan();
+
+
+  qrcode.callback = res => {
+    console.log("catch2");
+    if (res) {
+      console.log(res);
+      console.log("catch3");
+      outputData.innerText = res;
+      scanning = false;
+
+      video.srcObject.getTracks().forEach(track => {
+        track.stop();
+      });
+
+      qrResult.hidden = false;
+      // canvasElement.hidden = true;
+      btnScanQR.hidden = false;
+      var siteId = outputData.innerText;
+      console.log(siteId);
+      postFootPrint(siteId);
+      scanning = true;
+    }
+  };
+
+</script>
 {% endblock %}
