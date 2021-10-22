@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+
+<body>
+    {% extends "layout.html" %}
+    {% block title %}{{title}}{% endblock %}
+    {% block content %}
+    <h1 class="title">{{title}}</h1>
+
+    <div id="umsList">
+        <table id="tableSort">
+            <thead>
+                <tr>
+                    <th width="60px">序號</th>
+                    <th width="80px">企業</th>
+                    <th width="100px">商店</th>
+                    <th>時間</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for footPrints in footPrintsData_list %}
+                <tr>
+                    <td>{{loop.index}}</td>
+                    <td>{{footPrints['companyName']}}</td>
+                    <td>{{footPrints['siteName']}}</td>
+                    <td>{{footPrints['timestamp']}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+
+        </table>
+
+    </div>
+    {% endblock %}
+</body>
+
+</html>

@@ -1,0 +1,59 @@
+{% extends "mobileLayout.html" %}
+
+{% block title %}{{title}}{% endblock %}
+
+{% block bodyContent %}
+
+<body>
+  <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <h1>{{title}}</h1>
+  <br>
+  <div class="bs-stepper-content">
+    <div id="step1" class="content" role="tabpanel">
+      <div style="text-align:center">
+      </div>
+      <form method="POST">
+        <div class="form-group">
+          <label>
+            事件 : {{result.eventId}}<br>
+            感染商店 : {{result.name}}<br>
+            感染時間 : {{result.timestamp}}<br>
+            傳播力道 : {{result.spreadStrength}}<br>
+            感染總人數：{{result.amount}}<br>
+            感染足跡數 : {{infectedList|length}}<br>
+          </label>
+      </form>
+    </div>
+  </div>
+
+  <h3>感染足跡</h3>
+
+
+  <table id="tab" class="table">
+    <thead>
+      <tr>
+        <th scope="col" width="60px">序號</th>
+        <th scope="col" width="60px">姓名</th>
+        <th scope="col" width="75px">企業</th>
+        <th scope="col" width="90px">商店</th>
+        <th scope="col" width="110px">感染時間</th>
+      </tr>
+    </thead>
+    <tbody id=tbody>
+      {% for infectedMember in infectedList %}
+      <tr>
+        <td>{{loop.index}}</td>
+        <td>{{infectedMember.name}}</td>
+        <td>{{infectedMember.companyName}}</td>
+        <td>{{infectedMember.siteName}}</td>
+        <td>{{infectedMember.timestamp}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</body>
+{% endblock %}

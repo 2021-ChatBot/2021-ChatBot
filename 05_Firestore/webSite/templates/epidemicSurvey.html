@@ -1,0 +1,39 @@
+{% extends "mobileLayout.html" %}
+
+{% block bodyContent %}
+
+
+<body>
+    <h1>{{ title }}</h1>
+
+    <div class="form-group">
+        <label for="userList">
+            感染商店：
+            <select id="companySelect" name="siteId" class="custom-select">
+                <option>
+                    選擇商店
+                </option>
+                {% for id, name in sitesData.items() %}
+                <option value="{{ id }}">
+                    {{ name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        <br>
+        <label>
+            傳播力道：
+            <input type="radio" name="spreadStrength" value="1">1&nbsp
+            <input type="radio" name="spreadStrength" value="2">2&nbsp
+            <input type="radio" name="spreadStrength" value="3">3&nbsp
+        </label>
+        <br>
+        <label for="infectionTime">
+            感染時間：<input type="datetime-local" class="form-control" id="confirmedTime" name="confirmedTime" required="required" value="" step="1">
+        </label>
+        <br>
+        <button type="submit" class="btn btn-primary" formaction="/checkFootprintFlow">疫調</button>
+    </div>
+</body>
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        function changeCompany() {
+            var companyId = document.getElementById("companySelect").value;
+            console.log(companyId);
+            getCompanyData(companyId);
+        }
+
+        function getCompanyData(companyId) {
+            var requestURL = '/getCompanyData'
+            var companyData = {};
+            companyData["companyId"] = companyId
+            $.ajax({
+                url: requestURL,
+                data: JSON.stringify(companyData),
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json;charset=utf-8",
+
+                success: function (returnData) {
+                    $("#siteTable tr").remove();
+                    $("#memberTable tr").remove();
+                    createSiteTable(returnData["sitesData"]);
+                    createMemberTable(returnData["membersData"]);
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    console.log(xhr.status);
+                    console.log(thrownError);
+                }
+            });
+        }
+
+        function createSiteTable(sitesData) {
+            siteTable = document.getElementById("siteTable");
+
+            siteTable.innerHTML += '<tr><th>' + '商店編號' + '</th><th>' + '商店名稱' + '</th><th>';
+            for (var i = 0; i < sitesData.length; i++) {
+                siteTable.innerHTML += '<tr><th>' + sitesData[i]["id"] + '</th><th>' + sitesData[i]["name"] + '</th><th>';
+
+            }
+        }
+
+        function createMemberTable(membersData) {
+            memberTable = document.getElementById("memberTable");
+            memberTable.innerHTML += '<tr><th>' + '成員編號' + '</th><th>' + '成員姓名' + '</th><th>' + '成員角色' + '</th></tr>';
+            for (var i = 0; i < membersData.length; i++) {
+                memberTable.innerHTML += '<tr><th>' + membersData[i]["id"] + '</th><th>' + membersData[i]["name"] + '</th><th>' + membersData[i]["role"] + '</th></tr>';
+            }
+        }
+
+    </script>
+
+    <h1 class="title">企業設定</h1>
+    <div id="companyList">
+        <select id="companySelect" onchange="changeCompany()" style="font-size:20px;" class="custom-select">
+            {% for key, value in companyIdOfName.items() %}
+                {% if key == companyId %}
+                    <option selected="selected" value="{{ key }}">{{ value }}</option>
+                {% else %}
+                    <option selected="selected" value="{{ key }}">{{ value }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <hr size="8px" align="center" width="100%">
+    <div id="siteList" style="width: 100%;">
+        <h2>商店列表</h2>
+        <table style="border:2px solid;" class="table table-bordered">
+            <tbody id="siteTable">
+            <tr>
+                <th>商店編號</th>
+                <th>商店名稱</th>
+            </tr>
+            {% for site in companyData["sitesData"] %}
+                <tr>
+                    <th> {{ site["id"] }} </th>
+                    <th>{{ site["name"] }}</th>
+                <tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <tr>
+            <h2>成員列表</h2>
+            <table style="border:2px solid;" class="table table-bordered">
+                <tbody id="memberTable">
+                <tr>
+                    <th>成員編號</th>
+                    <th>成員姓名</th>
+                    <th>成員角色</th>
+                </tr>
+                {% for member in companyData["membersData"] %}
+                    <tr>
+                        <th> {{ member["id"] }} </th>
+                        <th>{{ member["name"] }}</th>
+                        <th>{{ member["role"] }}</th>
+                    <tr>
+                {% endfor %}
+                </tbody>
+            </table>
+    </div>
+{% endblock %}
+</body>
