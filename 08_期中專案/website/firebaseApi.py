@@ -35,11 +35,7 @@ class Firebase:
 
     # --------members--------------
     def getMemberData(self, memberId=None, companyId=None):
-        if memberId == None and companyId is None:
-            # get all member data from members
-            membersData = list(doc._data for doc in self.__membersCollection.stream())
-            return membersData  # list
-        elif companyId is not None:
+        if companyId is not None:
             membersData = []
             try:
                 for member in self.getMemberQuery(companyId=companyId).stream():
@@ -50,7 +46,7 @@ class Firebase:
             return membersData  # list
         else:
             # get single member data from members
-            memberData = self.__membersCollection.document(memberId).get().to_dict()
+            memberData = self.getMemberQuery(memberId=memberId).get().to_dict()
             return memberData  # dict
 
     def putMemberData(self, memberData):
@@ -69,10 +65,10 @@ class Firebase:
     # --------footprints-----------
     def getFootprintsData(self, memberId=None, siteId=None, companyId=None):
         footprintsData = []
-        if memberId != None:
+        if memberId is not None:
             footprintsData = list(
                 doc._data for doc in self.__membersCollection.document(memberId).collection('footprints').stream())
-        elif siteId != None and companyId is not None:
+        elif siteId is not None and companyId is not None:
             footprintsData = list(
                 doc._data for doc in self.getSiteQuery(companyId=companyId, siteId=siteId).collection('footprints').stream())
         return footprintsData  # list
