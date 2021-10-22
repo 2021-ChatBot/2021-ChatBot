@@ -12,5 +12,4 @@ class Push:
     def pushMessage(self, inputModel):
         if inputModel['messageType'] == 'textTemplate':
             templateMessage = TextSendMessage(text=inputModel['content'])
-            print(inputModel['lineId'], templateMessage)
             self.line_bot_api.push_message(inputModel['lineId'], [templateMessage])
