@@ -41,7 +41,7 @@ class TransmissionTracker:
         Memberfootprints = self.__firebaseApi.getFootprintsData(memberId=memberId)
         Memberfootprints = sorted(Memberfootprints, key=lambda k: k['timestamp'])
 
-        MemberInfo = self.__firebaseApi.getMemberData(memberId)
+        MemberInfo = self.__firebaseApi.getMemberData(memberId=memberId)
 
         for i in range(len(Memberfootprints)):
             memberIndex = i
