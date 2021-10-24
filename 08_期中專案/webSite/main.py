@@ -3,7 +3,6 @@ import re
 from flask import Flask, request, render_template, jsonify, url_for, redirect
 import json
 import time
-import pandas as pd
 from datetime import datetime
 import threading
 from config import Config
