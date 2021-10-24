@@ -115,8 +115,8 @@ def getMyFootprint(memberId):
     return render_template('myFootprints.html', footprintsData=footprintsData, title="足跡列表")
 
 # ----------------------------data studio-----------------------------
-@app.route("/eport/<memberId>", methods=['GET'])
-def getReport(memberId):
+@app.route("/report/<memberId>", methods=['GET'])
+def report(memberId):
     return render_template('dataStudio.html')
 
 # ----------------------------疫情調查設定-----------------------------
