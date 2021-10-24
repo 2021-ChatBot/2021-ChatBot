@@ -3,8 +3,7 @@ from firebase_admin import credentials, firestore, initialize_app
 
 cred = credentials.Certificate(firebaseKey)
 app=initialize_app(cred)
-db = firestore.client()
-dbPath = db.collection(projectName).document(DBName)
+dbPath = firestore.client()
 
 def postMember(memberName ,lineId):
     member = {
