@@ -207,6 +207,11 @@ def myCompany():
     _data = { 'companyId' : config.companyId }
     companyData["sitesData"] = firestore.getSite(_data)
     companyData["membersData"] = firestore.getMember(_data)
+    for member in companyData["membersData"]:
+        if member['role'] == "customer" :
+            member['role'] = "顧客"
+        else :
+            member['role'] = "管理者"
     return render_template('myCompany.html', companyData=companyData, C_IdOfName=C_IdOfName, companyId=config.companyId, title='我的企業')
 
 
