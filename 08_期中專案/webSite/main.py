@@ -36,7 +36,7 @@ def myForm(memberId):
     member = firestore.getMember(_data)[0]
     return render_template('myForm.html', member = member, title = "修改個資")
 # ----------------------掃碼---------------------------------------------
-@app.route("/newFoortprint/<memberId>", methods=['GET'])
+@app.route("/newFootprint/<memberId>", methods=['GET'])
 def newFootprint(memberId):
     return render_template('newFootprint.html', memberId=memberId, title="實聯掃碼")
 # ----------------------寫入掃碼足跡紀錄-----------------------------------
