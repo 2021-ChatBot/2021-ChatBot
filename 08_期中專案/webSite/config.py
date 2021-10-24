@@ -9,8 +9,6 @@ class Config():
         data = {
             'keyFile' : self.__firebase_keyFile,
             'storageBucket' : '[your projectID.appspot.com]',
-            'projectName'   : '[your project name]',
-            'dbName'        : '[your firestore dbName]',
             'memberTable'   : 'members',
             'siteTable'     : 'sites',
         }
