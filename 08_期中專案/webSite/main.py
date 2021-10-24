@@ -240,10 +240,3 @@ def newSite():
     setUpData = request.form.to_dict()
     firestore.setSite(setUpData)
     return redirect(url_for('myCompany'))
-
-
-port = int(os.environ.get('PORT', 8001))
-if __name__ == '__main__':
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.jinja_env.auto_reload = True
-    app.run(host='127.0.0.1', port=port, debug=True)
