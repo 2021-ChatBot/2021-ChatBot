@@ -22,7 +22,7 @@ def create_richMenu(lineId, linebotapi, timeflag=True, memberId=""):
             else :
                 if area["action"]["uri"] == "/myCompany":
                     area["action"]["uri"] = WebUrl + area["action"]["uri"]
-                else:
+                else :
                     if area["action"]["uri"] == "/myCompany":
                         area["action"]["uri"] = WebUrl + area["action"]["uri"]
                     else:
