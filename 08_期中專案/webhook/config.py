@@ -22,6 +22,4 @@ serviceAccountKey = "[your serviceAccountKey.json]"
 #（3）Firestore
 
 firebaseKey = '[your firebaseKey.json]'
-projectName = '[your project Id]'
-DBName = '[your DBName]'
 memberTableName = 'members'
