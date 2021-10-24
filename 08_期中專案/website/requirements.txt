@@ -1,6 +1,0 @@
-Flask
-line-bot-sdk
-firebase_admin
-google-auth
-pandas
-google-cloud-pubsub
