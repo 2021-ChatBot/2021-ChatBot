@@ -74,13 +74,14 @@ class Firestore:
             members.append(doc.get().to_dict())
 
         return members
-
+    
     # --------Footprint--------------
     def setFootprint(self, data):
         # data{memberId, siteId, companyId, timestamp}
         footprint_ref = self.__db.collection('members').document(data["memberId"]).collection('footprints')
         footprintId = footprint_ref.add(data)[1].id
         data['id'] = footprintId
+        footprint_ref.set(data)
         site_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints').document(footprintId)
         site_ref.set(data)
 
