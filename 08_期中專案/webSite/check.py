@@ -15,11 +15,13 @@ class CheckFootprints:
         if data['strength'] == 1:
             for memberfootprint in self.__firestore.getmemberFootprints(data):
                 if memberfootprint['timestamp'] >= data['timestamp']:
+                    memberfootprint.pop('strength', None)
                     self.infectedFootprints.append(memberfootprint)
         else:
             mystrength = data['strength']
             for footprint in self.__firestore.getsiteFootprints(data):
                 if mystrength >= 1 :
+                    footprint.pop('strength', None)
                     self.infectedFootprints.append(footprint)
                     footprint['strength'] = data['strength'] - 1
                     self.check(footprint)
