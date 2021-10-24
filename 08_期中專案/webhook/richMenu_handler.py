@@ -23,7 +23,10 @@ def create_richMenu(lineId, linebotapi, timeflag=True, memberId=""):
                 if area["action"]["uri"] == "/myCompany":
                     area["action"]["uri"] = WebUrl + area["action"]["uri"]
                 else:
-                    area["action"]["uri"] = WebUrl + area["action"]["uri"] + memberId
+                    if area["action"]["uri"] == "/myCompany":
+                        area["action"]["uri"] = WebUrl + area["action"]["uri"]
+                    else:
+                        area["action"]["uri"] = WebUrl + area["action"]["uri"] + memberId
 
     createResponse = requests.post(
         'https://api.line.me/v2/bot/richmenu',
