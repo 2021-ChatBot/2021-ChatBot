@@ -144,7 +144,6 @@ def infectedFootprints():
     event['eventId'] = firestore.setEvent(event)
     CheckFootprints(event)
     infectedFootprints = firestore.getEvent(event)['infectedFootprints']
-    print(f"infectedFootprints:{infectedFootprints}")
     # line push message------------------------------------------------------
     notifylist = {}
     S_IdToName = {}
@@ -227,7 +226,6 @@ def getCompanyData():
 # ----------------------------增修商店------------------------------------
 @app.route("/mySite/<companyId>/<siteId>", methods=['GET'])
 def mySite(companyId, siteId):
-    print(companyId, siteId)
     _data = {'companyId': companyId}
     company = firestore.getCompany(_data)[0]
     site = {}
