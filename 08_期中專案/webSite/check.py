@@ -1,32 +1,26 @@
 from firestoreDAO import Firestore
 
+
 class CheckFootprints:
     def __init__(self, event):
         self.__firestore = Firestore()
-        self.check(event)
+        self.infectedFootprints = []
+        footprint = self.__firestore.getFootprints(event)[0]
+        footprint['strength'] = event['strength']
+        self.check(footprint)
+        event['infectedFootprints'] = self.infectedFootprints
+        self.__firestore.setEvent(event)
 
-
-    def check(self, event):
-        if event['strength'] >= 0:
-            count = event['strength']
-            siteFootprints = self.__firestore.getFootprints(event)
-            for sitefootprint in siteFootprints:
-                if count >= 0:
-                    event['infectedFootprints'] = sitefootprint
-                    self.__firestore.setEvent(event)
-                    del event['infectedFootprints']
-
-                    memberfootprints = self.__firestore.getFootprints(sitefootprint)
-
-                    try:
-                        event["infectedTime"] = memberfootprints[0]['timestamp']
-                        event["siteId"] = memberfootprints[0]['siteId']
-                    except IndexError:
-                        pass
-
-                    if event['strength'] > 0:
-                        event['strength'] -= 1
-
-                        self.check(event)
-
-                    count -= 1
+    def check(self, data):
+        if data['strength'] == 1:
+            for memberfootprint in self.__firestore.getmemberFootprints(data):
+                if memberfootprint['timestamp'] >= data['timestamp']:
+                    self.infectedFootprints.append(memberfootprint)
+        else:
+            mystrength = data['strength']
+            for footprint in self.__firestore.getsiteFootprints(data):
+                if mystrength >= 1 :
+                    self.infectedFootprints.append(footprint)
+                    footprint['strength'] = data['strength'] - 1
+                    self.check(footprint)
+                    mystrength -= 1
