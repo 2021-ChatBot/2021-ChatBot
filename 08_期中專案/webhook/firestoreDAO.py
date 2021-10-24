@@ -8,7 +8,8 @@ dbPath = firestore.client()
 def postMember(memberName ,lineId):
     member = {
         "name" : memberName,
-        "lineId" : lineId
+        "lineId" : lineId,
+        "role" : "customer"
     }
     memberCollection = dbPath.collection(memberTableName)
     memberList = list(doc._data for doc in memberCollection.stream())
