@@ -192,7 +192,7 @@ def infectedFootprints():
         "amount": len(set([member['memberId'] for member in infectedFootprints])),
         "name": siteName
     }
-    infectedFootprints = sorted(infectedFootprints, key = lambda i: (i['name'], i['timestamp']))
+    infectedFootprints = sorted(infectedFootprints, key = lambda i: i['name'])
     return render_template('infectedFootprints.html', infectedList=infectedFootprints, result=result, title="疫情調查")
 
 
