@@ -21,18 +21,18 @@ app.secret_key = os.urandom(24)
 @app.route("/myData/<memberId>",methods=['GET', 'POST'])
 def myData(memberId):
     if request.method == 'GET':
-        _data = { id : memberId }
+        _data = { 'id' : memberId }
         member = firestore.getMember(_data)[0]
     if request.method == 'POST':
         setUpData = request.form.to_dict()
         setUpData['id'] = memberId
         firestore.updateMember(setUpData)
-        _data = { id : memberId }
+        _data = { 'id' : memberId }
         member = firestore.getMember(_data)[0]
     return render_template('myData.html', member = member, title = "我的個資")
 @app.route("/myForm/<memberId>", methods=['GET'])
 def myForm(memberId):
-    _data = { id: memberId }
+    _data = { 'id': memberId }
     member = firestore.getMember(_data)[0]
     return render_template('myForm.html', member = member, title = "修改個資")
 # ----------------------掃碼---------------------------------------------
