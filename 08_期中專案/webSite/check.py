@@ -13,7 +13,6 @@ class CheckFootprints:
             for sitefootprint in siteFootprints:
                 if count >= 0:
                     event['infectedFootprints'] = sitefootprint
-                    print(f"event['infectedFootprints']:{event['infectedFootprints']}")
                     self.__firestore.setEvent(event)
                     del event['infectedFootprints']
 
