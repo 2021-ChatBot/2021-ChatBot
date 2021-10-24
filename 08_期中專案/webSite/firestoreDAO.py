@@ -9,8 +9,7 @@ initialize_app(cred, {'storageBucket': config.firebase()['storageBucket']})
 
 class Firestore:
     def __init__(self):
-        self.__firestore = firestore.client()
-        self.__db = self.__firestore.collection(config.firebase()['projectName']).document(config.firebase()['dbName'])
+        self.__db = firestore.client()
         self.siteTable = config.firebase()['siteTable']
         self.memberTable = config.firebase()['memberTable']
         self.eventTable = config.firebase()['eventTable']
