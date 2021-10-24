@@ -90,20 +90,29 @@ class Firestore:
         if "infectedTime" in data.keys():
             footprints_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints')
             docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["infectedTime"]).get()
-        elif 'memberId' in data.keys():
-            # data{memberId}
-            if 'timestamp' in data.keys():
-                footprints_ref = self.__db.collection('members').document(data['memberId']).collection('footprints')
-                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", data["timestamp"]).get()
-            else:
-                docs = self.__db.collection(self.memberTable).document(data["memberId"]).collection('footprints').stream()
         else:
-            # data{companyId,siteId}
-            docs = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints').stream()
+            # data{memberId}
+            docs = self.__db.collection(self.memberTable).document(data["memberId"]).collection('footprints').order_by(u'timestamp').stream()
 
         for doc in docs:
             footprints.append(doc._data)
-        return sorted(footprints,key=lambda k: k['timestamp'])
+        return footprints
+
+    def getsiteFootprints(self, data):
+        footprints = []
+        footprints_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints')
+        docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["timestamp"]).get()
+        for doc in docs:
+            footprints.append(doc._data)
+        return footprints
+
+    def getmemberFootprints(self, data):
+        footprints = []
+        footprints_ref = self.__db.collection('members').document(data['memberId']).collection('footprints')
+        docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["timestamp"]).get()
+        for doc in docs:
+            footprints.append(doc._data)
+        return footprints
 
     # --------Event--------------
     def setEvent(self, data):
