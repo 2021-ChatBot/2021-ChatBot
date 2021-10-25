@@ -78,7 +78,7 @@ class Firestore:
         footprintId = footprint_ref.add(data)[1].id
         data['id'] = footprintId
         footprint_ref.document(footprintId).update(data)
-        site_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints/{footprintId}")
+        site_ref = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints/{footprintId}")
         site_ref.set(data)
 
     def getFootprints(self, data):
