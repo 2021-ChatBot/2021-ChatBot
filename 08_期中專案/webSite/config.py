@@ -11,5 +11,6 @@ class Config():
             'storageBucket' : '[your projectID.appspot.com]',
             'memberTable'   : 'members',
             'siteTable'     : 'sites',
+            'eventTable'    : 'events'
         }
         return data
