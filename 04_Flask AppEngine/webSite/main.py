@@ -197,8 +197,9 @@ def infectedFootprints():
 
 
 # ----------------------------組織管理-----------------------------
+@app.route("/myCompany/<memberId>", methods=['GET'])
 @app.route("/myCompany", methods=['GET'])
-def myCompany():
+def myCompany(memberId=None):
     companies = firestore.getCompany()
     C_IdOfName = {}
     companyData = {}
