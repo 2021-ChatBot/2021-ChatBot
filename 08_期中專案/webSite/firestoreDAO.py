@@ -118,7 +118,8 @@ class Firestore:
     def setEvent(self, data):
         if "eventId" in data.keys():
             # data{eventId, infectedFootprint}
-            self.__db.collection(self.eventTable).document(data['eventId']).collection("infectedFootprints").document(data['infectedFootprints']['id']).set(data['infectedFootprints'])
+            for infectedFootprint in data['infectedFootprints']:
+                self.__db.collection(self.eventTable).document(data['eventId']).collection("infectedFootprints").document(infectedFootprint['id']).set(infectedFootprint)
         else:
             # data{strength, companyId, infectedTime, siteId}
             eventId = self.__db.collection(self.eventTable).add(data)[1].id
