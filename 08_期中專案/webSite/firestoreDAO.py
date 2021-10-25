@@ -81,7 +81,7 @@ class Firestore:
         footprint_ref = self.__db.collection('members').document(data["memberId"]).collection('footprints')
         footprintId = footprint_ref.add(data)[1].id
         data['id'] = footprintId
-        footprint_ref.set(data)
+        footprint_ref.document(footprintId).update(data)
         site_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints').document(footprintId)
         site_ref.set(data)
 
