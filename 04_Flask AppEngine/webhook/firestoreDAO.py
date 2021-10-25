@@ -22,7 +22,7 @@ def postMember(memberName ,lineId):
     memberCollection.document(memberId).update({'id' : memberId})
 
     # create memberid in company
-    dbPath.collection("companies").document(companyId).collection("members").document(memberId).set(None)
+    dbPath.document(f"companies/{companyId}/members/{memberId}").set(None)
 
     return {
         "name" : memberName,
