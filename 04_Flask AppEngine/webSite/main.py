@@ -50,6 +50,7 @@ def setMyFootprint():
         importTime = int(time.time() + 28800)
     except:
         return jsonify('這不是實聯制QRcode')
+    siteName = None
     companies = firestore.getCompany()
     for company in companies:
         _data = { 'companyId' : company['id'] }
