@@ -1,4 +1,4 @@
-from config import firebaseKey,projectName,DBName,memberTableName, companyId
+from config import firebaseKey,memberTableName, companyId
 from firebase_admin import credentials, firestore, initialize_app
 
 cred = credentials.Certificate(firebaseKey)
