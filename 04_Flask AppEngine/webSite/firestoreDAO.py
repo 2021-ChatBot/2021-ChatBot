@@ -32,7 +32,7 @@ class Firestore:
     # --------Site--------------
     def setSite(self, data):
         # data{companyId,id,name}
-        site_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}")
+        site_ref = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}")
         del data["companyId"]
         site_ref.set(data)
 
