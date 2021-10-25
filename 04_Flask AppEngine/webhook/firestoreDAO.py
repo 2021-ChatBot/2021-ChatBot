@@ -1,4 +1,4 @@
-from config import firebaseKey,memberTable, companyId
+from config import firebaseKey,memberTable, companyId, role
 from firebase_admin import credentials, firestore, initialize_app
 
 cred = credentials.Certificate(firebaseKey)
@@ -9,7 +9,7 @@ def postMember(memberName ,lineId):
     member = {
         "name" : memberName,
         "lineId" : lineId,
-        "role" : "customer"
+        "role" : role
     }
     memberCollection = dbPath.collection(memberTableName)
     memberList = list(doc._data for doc in memberCollection.stream())
