@@ -196,7 +196,7 @@ def infectedFootprints():
     return render_template('infectedFootprints.html', infectedList=infectedFootprints, result=result, title="疫情調查")
 
 
-# ----------------------------組織管理-----------------------------
+# ----------------------------我的企業-----------------------------
 @app.route("/myCompany/<memberId>", methods=['GET'])
 @app.route("/myCompany", methods=['GET'])
 def myCompany(memberId=None):
@@ -229,12 +229,13 @@ def getCompanyData():
     # companyData->{"sitesData":[], "membersData":[]}
 
 # ----------------------------增修商店------------------------------------
+@app.route("/mySite/<companyId>", methods=['GET'])
 @app.route("/mySite/<companyId>/<siteId>", methods=['GET'])
-def mySite(companyId, siteId):
+def mySite(companyId, siteId=None):
     _data = {'companyId': companyId}
     company = firestore.getCompany(_data)[0]
     site = {}
-    if siteId !="_":
+    if siteId !=None:
         _data = {'companyId': companyId, 'id':siteId}
         site = firestore.getSite(_data)[0]
 
