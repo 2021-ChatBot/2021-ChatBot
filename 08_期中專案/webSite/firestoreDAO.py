@@ -88,31 +88,30 @@ class Firestore:
     def getFootprints(self, data):
         footprints = []
         if "infectedTime" in data.keys():
-            footprints_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints')
-            docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["infectedTime"]).get()
+            footprints_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints")
+            docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["infectedTime"]).limit(1).get()
         else:
             # data{memberId}
-            docs = self.__db.collection(self.memberTable).document(data["memberId"]).collection('footprints').order_by(u'timestamp').stream()
+            docs = self.__db.collection(f"{self.memberTable}/{data['memberId']}/footprints").order_by(u'timestamp').stream()
 
         for doc in docs:
             footprints.append(doc._data)
         return footprints
 
-    def getsiteFootprints(self, data):
-        footprints = []
-        footprints_ref = self.__db.collection('companies').document(data['companyId']).collection(self.siteTable).document(data['siteId']).collection('footprints')
-        docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["timestamp"]).get()
-        for doc in docs:
-            footprints.append(doc._data)
-        return footprints
+    def getsiteFootprint(self, data):
+        footprints_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints")
+        footprint = footprints_ref.order_by(u'timestamp').where("timestamp", u">", data["timestamp"]).limit(1).get()
+        if len(footprint) == 0:
+            return {}
+        return footprint[0].to_dict()
 
-    def getmemberFootprints(self, data):
-        footprints = []
-        footprints_ref = self.__db.collection('members').document(data['memberId']).collection('footprints')
-        docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["timestamp"]).get()
-        for doc in docs:
-            footprints.append(doc._data)
-        return footprints
+
+    def getmemberFootprint(self, data):
+        footprints_ref = self.__db.collection(f"members/{data['memberId']}/footprints")
+        footprint = footprints_ref.order_by(u'timestamp').where("timestamp", u">", data["timestamp"]).limit(1).get()
+        if len(footprint) == 0:
+            return {}
+        return footprint[0].to_dict()
 
     # --------Event--------------
     def setEvent(self, data):
