@@ -9,13 +9,14 @@
             企業：{{company.name}}
         </div>
         <div class="field form-inline">
-            商店編號：<input class="label" name="id" value="{{site.id}}">
+            商店編號：<input class="label" name="id" value="{{site.id}}" required>
         </div>
         <div class="field form-inline">
-            商店名稱：<input class="label" name="name" value="{{site.name}}">
+            商店名稱：<input class="label" name="name" value="{{site.name}}" required>
         </div>
-        <div class="form-group">
-            <button type="submit" class="btn btn-primary">增修</button>
+        <div class="field form-inline">
+          <button class="button is-link">增修</button>
+          <a class="button is-link" href="/myCompany" style="margin-left: 5%">取消</a>
         </div>
     </label>
 </form>
