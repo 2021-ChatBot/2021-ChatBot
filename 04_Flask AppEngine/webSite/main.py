@@ -60,7 +60,7 @@ def setMyFootprint():
     for company in companies:
         _data = {'companyId': company['id'], 'id': siteId}
         site = firestore.getSite(_data)
-        if len(site) != 0:
+        if site[0] != None:
             notificationModel = {
                 "lineId": firestore.getMember({'id': memberId})[0]['lineId'],
                 "messageType": "textTemplate",
