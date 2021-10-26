@@ -11,7 +11,7 @@ def postMember(memberName ,lineId):
         "lineId" : lineId,
         "role" : role
     }
-    memberCollection = dbPath.collection(memberTableName)
+    memberCollection = dbPath.collection(memberTable)
     memberList = list(doc._data for doc in memberCollection.stream())
     for memberdata in memberList:
         print(memberdata)
