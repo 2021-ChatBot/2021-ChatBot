@@ -61,12 +61,12 @@
 <h1 class="title">{{title}}</h1>
 <div id="companyList">
     <select id="companySelect" onchange="changeCompany()" style="font-size:20px;" class="custom-select">
-        {% for key, value in C_IdOfName.items() %}
-        {% if key == companyId %}
-        <option selected="selected" value="{{ key }}">{{ value }}</option>
-        {% else %}
-        <option selected="selected" value="{{ key }}">{{ value }}</option>
-        {% endif %}
+        {% for company in companies %}
+            {% if company['id'] == companyId %}
+            <option selected="selected" value="{{ company['id'] }}">{{ company['name'] }}</option>
+            {% else %}
+            <option value="{{ company['id'] }}">{{ company['name'] }}</option>
+            {% endif %}
         {% endfor %}
     </select>
 </div>
