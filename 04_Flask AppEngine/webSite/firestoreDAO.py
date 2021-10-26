@@ -36,17 +36,19 @@ class Firestore:
         del data["companyId"]
         site_ref.set(data)
 
-    def getSite(self, data):
+    def getSite(self, data) -> list:
         # data{companyId,id}
         sites = []
         if "id" in data:
-            doc = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}")
-            sites.append(doc.get().to_dict())
+            doc = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}").get()
+            if doc != None:
+                sites.append(doc.to_dict())
         else:
             docs = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}").stream()
             for doc in docs:
                 sites.append(doc._data)
         return sites
+
 
     # --------Member--------------
     def updateMember(self, data):
