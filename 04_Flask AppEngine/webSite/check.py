@@ -4,8 +4,9 @@ class CheckFootprints:
     def __init__(self, event):
         self.__firestore = Firestore()
         self.infectedFootprints = []
-        footprint = self.__firestore.getFootprints(event)[0]
-        self.check(footprint, event['strength'])
+        footprint = self.__firestore.getFootprints(event)
+        if footprint[0] is not None:
+            self.check(footprint[0], event['strength'])
         event['infectedFootprints'] = self.infectedFootprints
         self.__firestore.setEvent(event)
 
