@@ -54,7 +54,7 @@
       },
       "action": {
         "type": "uri",
-        "uri": "/myCompany"
+        "uri": "/myCompany/"
       }
     },
     {
