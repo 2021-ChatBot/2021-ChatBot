@@ -18,27 +18,33 @@ app.secret_key = os.urandom(24)
 
 
 # ----------------------個人資料-----------------------------------------
-@app.route("/myData/<memberId>",methods=['GET', 'POST'])
+@app.route("/myData/<memberId>", methods=['GET', 'POST'])
 def myData(memberId):
     if request.method == 'GET':
-        _data = { 'id' : memberId }
+        _data = {'id': memberId}
         member = firestore.getMember(_data)[0]
     if request.method == 'POST':
         setUpData = request.form.to_dict()
         setUpData['id'] = memberId
         firestore.updateMember(setUpData)
-        _data = { 'id' : memberId }
+        _data = {'id': memberId}
         member = firestore.getMember(_data)[0]
-    return render_template('myData.html', member = member, title = "我的個資")
+    return render_template('myData.html', member=member, title="我的個資")
+
+
 @app.route("/myForm/<memberId>", methods=['GET'])
 def myForm(memberId):
-    _data = { 'id': memberId }
+    _data = {'id': memberId}
     member = firestore.getMember(_data)[0]
-    return render_template('myForm.html', member = member, title = "修改個資")
+    return render_template('myForm.html', member=member, title="修改個資")
+
+
 # ----------------------掃碼---------------------------------------------
 @app.route("/newFootprint/<memberId>", methods=['GET'])
 def newFootprint(memberId):
     return render_template('newFootprint.html', memberId=memberId, title="實聯掃碼")
+
+
 # ----------------------寫入掃碼足跡紀錄-----------------------------------
 @app.route("/newFootprint", methods=['POST'])
 def setMyFootprint():
@@ -50,84 +56,66 @@ def setMyFootprint():
         importTime = int(time.time() + 28800)
     except:
         return jsonify('這不是實聯制QRcode')
-    siteName = None
     companies = firestore.getCompany()
     for company in companies:
-        _data = { 'companyId' : company['id'] }
-        for site in firestore.getSite(_data):
-            if site['id'] == siteId :
-                siteName = site['name']
-                break
-    if siteName != None:
-        notificationModel = {
-            "lineId": firestore.getMember({'id':memberId})[0]['lineId'],
-            "messageType": "textTemplate",
-            "content": "掃碼成功\n"
-                       f"商店: {siteName}\n"
-                       f"時間: {str(datetime.utcfromtimestamp(importTime).strftime('%Y-%m-%d %H:%M:%S'))}"
-        }
-        notificationThread = threading.Thread(target=line.pushMessage, args=(notificationModel,))
-        notificationThread.start()
+        _data = {'companyId': company['id'], 'id': siteId}
+        site = firestore.getSite(_data)
+        if len(site) != 0:
+            notificationModel = {
+                "lineId": firestore.getMember({'id': memberId})[0]['lineId'],
+                "messageType": "textTemplate",
+                "content": "掃碼成功\n"
+                           f"商店: {site[0]['name']}\n"
+                           f"時間: {str(datetime.utcfromtimestamp(importTime).strftime('%Y-%m-%d %H:%M:%S'))}"
+            }
+            notificationThread = threading.Thread(target=line.pushMessage, args=(notificationModel,))
+            notificationThread.start()
 
-        # - firestore
-        footprintModel = {
-            'memberId': memberId,
-            'siteId': siteId,
-            'companyId': company['id'],
-            'timestamp': importTime
-        }
-        firestore.setFootprint(footprintModel)
+            # - firestore
+            footprintModel = {
+                'memberId': memberId,
+                'siteId': siteId,
+                'companyId': company['id'],
+                'timestamp': importTime
+            }
+            firestore.setFootprint(footprintModel)
+
+            return jsonify(site[0]['name'] + '  到店掃碼成功')
+
+    return jsonify('這不是實聯制QRcode')
 
 
-        return jsonify(siteName + '  到店掃碼成功')
-    else:
-        return jsonify('這不是實聯制QRcode')
 # ----------------------------User掃碼足跡紀錄-----------------------------
 @app.route("/myFootprints/<memberId>", methods=['GET'])
 def getMyFootprint(memberId):
-    _data = {'memberId' : memberId}
+    _data = {'memberId': memberId}
     footprints = firestore.getFootprints(_data)
-    footprints.sort(key=lambda k: (k.get('timestamp', 0)))
-
     footprintsData = []
-    S_IdToName = {}
-    C_IdToName = {}
-
-    if footprints != []:
-        companies = firestore.getCompany()
-        for company in companies:
-            C_IdToName[company['id']] = company['name']
-            _data = {'companyId': company['id'] }
-            for site in firestore.getSite(_data):
-                S_IdToName[site['id']] = site['name']
-
+    if len(footprints) != 0:
         for footprint in footprints:
-            footprint['timestamp'] = str(
-                datetime.utcfromtimestamp(footprint['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
-
             footprintsData.append(
                 {
-                    'companyName': C_IdToName[ footprint['companyId'] ],
-                    'siteName': S_IdToName[ footprint['siteId'] ],
-                    'timestamp': footprint['timestamp']
+                    'companyName': firestore.getCompany({'companyId': footprint['companyId']})[0]['name'],
+                    'siteName': firestore.getSite({'companyId': footprint['companyId'], 'id': footprint['siteId']})[0]['name'],
+                    'timestamp': str(datetime.utcfromtimestamp(footprint['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
                 }
             )
-
     return render_template('myFootprints.html', footprintsData=footprintsData, title="足跡列表")
+
 
 # ----------------------------data studio-----------------------------
 @app.route("/report/<memberId>", methods=['GET'])
 def report(memberId):
     return render_template('dataStudio.html')
 
+
 # ----------------------------疫情調查設定-----------------------------
 @app.route("/checkFootprints/<memberId>", methods=['GET'])
 def checkFootprints(memberId):
     sitesData = {}
     companies = firestore.getCompany()
-
     for company in companies:
-        _data = { 'companyId': company['id'] }
+        _data = {'companyId': company['id']}
         for site in firestore.getSite(_data):
             sitesData.update({f"{company['id']}-{site['id']}": f'{company["name"]} {site["name"]}'})
 
@@ -146,29 +134,18 @@ def infectedFootprints():
     infectedFootprints = firestore.getEvent(event)['infectedFootprints']
     # line push message------------------------------------------------------
     notifylist = {}
-    S_IdToName = {}
-    C_IdToName = {}
-    companies = firestore.getCompany()
-    for company in companies:
-        C_IdToName[company['id']] = company['name']
-        _data = {'companyId': company['id']}
-        for site in firestore.getSite(_data):
-            S_IdToName[site['id']] = site['name']
-            
 
     for infectedMember in infectedFootprints:
-        #----------------------------------------
-        infectedMember['siteName'] = S_IdToName[ infectedMember['siteId'] ]
-        infectedMember['companyName'] = C_IdToName[ infectedMember['companyId']]
-        _data = {'id': infectedMember['memberId'] }
-        infectedMember['name'] = firestore.getMember(_data)[0]['name']
+        # ----------------------------------------
+        infectedMember['siteName'] = firestore.getSite({'companyId': infectedMember['companyId'], 'id': infectedMember['siteId']})[0]['name']
+        infectedMember['companyName'] = firestore.getCompany({'companyId': infectedMember['companyId']})[0]['name']
+        infectedMember['name'] = firestore.getMember({'id': infectedMember['memberId']})[0]['name']
         infectedMember['infectedTime'] = str(datetime.utcfromtimestamp(infectedMember['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
-        #----------------------------------------
+        # ----------------------------------------
         if infectedMember['name'] not in notifylist.keys():
-            _data = {'id': infectedMember['memberId']}
-            infectedMemberlineId = firestore.getMember(_data)[0]["lineId"]
-            notifylist[ infectedMember['name'] ] = {"content": "", "lineId": infectedMemberlineId}
-        notifylist[ infectedMember['name'] ]["content"] += f"\n\n感染地點: {infectedMember['siteName']}\n感染時間: {infectedMember['infectedTime']}"
+            infectedMemberlineId = firestore.getMember({'id': infectedMember['memberId']})[0]["lineId"]
+            notifylist[infectedMember['name']] = {"content": "", "lineId": infectedMemberlineId}
+        notifylist[infectedMember['name']]["content"] += f"\n\n感染地點: {infectedMember['siteName']}\n感染時間: {infectedMember['infectedTime']}"
 
     for member in notifylist.keys():
         notificationModel = {
@@ -181,19 +158,14 @@ def infectedFootprints():
         notificationThread = threading.Thread(target=line.pushMessage, args=(notificationModel,))
         notificationThread.start()
     # -----------------------------------------------------------------------
-    _data = {
-        'companyId' : event['companyId'],
-        'id' : event['siteId']
-    }
-    siteName = firestore.getSite(_data)[0]["name"]
     result = {
         'eventId': event['eventId'],
         'strength': str(request.values['strength']),
         "infectedTime": str(request.values['infectedTime']).replace("T", " "),
         "amount": len(set([member['memberId'] for member in infectedFootprints])),
-        "name": siteName
+        "name": firestore.getSite({'companyId': event['companyId'], 'id': event['siteId']})[0]["name"]
     }
-    infectedFootprints = sorted(infectedFootprints, key = lambda i: i['name'])
+    infectedFootprints = sorted(infectedFootprints, key=lambda i: i['name'])
     return render_template('infectedFootprints.html', infectedList=infectedFootprints, result=result, title="疫情調查")
 
 
@@ -202,19 +174,16 @@ def infectedFootprints():
 @app.route("/myCompany", methods=['GET'])
 def myCompany(memberId=None):
     companies = firestore.getCompany()
-    C_IdOfName = {}
     companyData = {}
-    for company in companies:
-        C_IdOfName[company["id"]] = company["name"]
-    _data = { 'companyId' : config.companyId }
+    _data = {'companyId': config.companyId}
     companyData["sitesData"] = firestore.getSite(_data)
     companyData["membersData"] = firestore.getMember(_data)
     for member in companyData["membersData"]:
-        if member['role'] == "customer" :
+        if member['role'] == "customer":
             member['role'] = "顧客"
-        else :
+        else:
             member['role'] = "管理者"
-    return render_template('myCompany.html', companyData=companyData, C_IdOfName=C_IdOfName, companyId=config.companyId, title='我的企業')
+    return render_template('myCompany.html', companyData=companyData, companies=companies, companyId=config.companyId, title='我的企業')
 
 
 # ----------------------------------------------------------------
@@ -229,6 +198,7 @@ def getCompanyData():
     return companyData
     # companyData->{"sitesData":[], "membersData":[]}
 
+
 # ----------------------------增修商店------------------------------------
 @app.route("/mySite/<companyId>", methods=['GET'])
 @app.route("/mySite/<companyId>/<siteId>", methods=['GET'])
@@ -236,11 +206,12 @@ def mySite(companyId, siteId=None):
     _data = {'companyId': companyId}
     company = firestore.getCompany(_data)[0]
     site = {}
-    if siteId !=None:
-        _data = {'companyId': companyId, 'id':siteId}
+    if siteId != None:
+        _data = {'companyId': companyId, 'id': siteId}
         site = firestore.getSite(_data)[0]
 
     return render_template('mySite.html', company=company, site=site, title='增修商店')
+
 
 # ----------------------------增修商店------------------------------------
 @app.route("/mySite", methods=['POST'])
@@ -248,6 +219,7 @@ def newSite():
     setUpData = request.form.to_dict()
     firestore.setSite(setUpData)
     return redirect(url_for('myCompany'))
+
 
 port = int(os.environ.get('PORT', 8080))
 if __name__ == '__main__':
