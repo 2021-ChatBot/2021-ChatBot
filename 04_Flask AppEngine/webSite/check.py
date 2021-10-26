@@ -5,7 +5,7 @@ class CheckFootprints:
         self.__firestore = Firestore()
         self.infectedFootprints = []
         footprint = self.__firestore.getFootprints(event)
-        if footprint[0] is not None:
+        if len(footprint) is not 0:
             self.check(footprint[0], event['strength'])
         event['infectedFootprints'] = self.infectedFootprints
         self.__firestore.setEvent(event)
