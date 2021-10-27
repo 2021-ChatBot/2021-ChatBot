@@ -10,9 +10,6 @@ initialize_app(cred, {'storageBucket': config.firebase()['storageBucket']})
 class Firestore:
     def __init__(self):
         self.__db = firestore.client()
-        self.siteTable = config.firebase()['siteTable']
-        self.memberTable = config.firebase()['memberTable']
-        self.eventTable = config.firebase()['eventTable']
 
     # --------Company--------------
     def getCompany(self, data=None):
@@ -32,7 +29,7 @@ class Firestore:
     # --------Site--------------
     def setSite(self, data):
         # data{companyId,id,name}
-        site_ref = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}")
+        site_ref = self.__db.document(f"companies/{data['companyId']}/sites/{data['id']}")
         del data["companyId"]
         site_ref.set(data)
 
@@ -40,11 +37,11 @@ class Firestore:
         # data{companyId,id}
         sites = []
         if "id" in data:
-            doc = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['id']}").get()
+            doc = self.__db.document(f"companies/{data['companyId']}/sites/{data['id']}").get()
             if doc != None:
                 sites.append(doc.to_dict())
         else:
-            docs = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}").stream()
+            docs = self.__db.collection(f"companies/{data['companyId']}/sites").stream()
             for doc in docs:
                 sites.append(doc._data)
         return sites
@@ -80,23 +77,23 @@ class Firestore:
         footprintId = footprint_ref.add(data)[1].id
         data['id'] = footprintId
         footprint_ref.document(footprintId).update(data)
-        site_ref = self.__db.document(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints/{footprintId}")
+        site_ref = self.__db.document(f"companies/{data['companyId']}/sites/{data['siteId']}/footprints/{footprintId}")
         site_ref.set(data)
 
     def getFootprints(self, data):
         footprints = []
         if "infectedTime" in data.keys():
-            footprints_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints")
+            footprints_ref = self.__db.collection(f"companies/{data['companyId']}/sites/{data['siteId']}/footprints")
             docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", data["infectedTime"]).limit(1).get()
         else:
             # data{memberId}
-            docs = self.__db.collection(f"{self.memberTable}/{data['memberId']}/footprints").order_by(u'timestamp').stream()
+            docs = self.__db.collection(f"members/{data['memberId']}/footprints").order_by(u'timestamp').stream()
         for doc in docs:
             footprints.append(doc._data)
         return footprints
 
     def getsiteFootprint(self, data):
-        footprints_ref = self.__db.collection(f"companies/{data['companyId']}/{self.siteTable}/{data['siteId']}/footprints")
+        footprints_ref = self.__db.collection(f"companies/{data['companyId']}/sites/{data['siteId']}/footprints")
         footprint = footprints_ref.order_by(u'timestamp').where("timestamp", u">", data["timestamp"]).limit(1).get()
         if len(footprint) == 0:
             return {}
@@ -115,18 +112,18 @@ class Firestore:
         if "eventId" in data.keys():
             # data{eventId, infectedFootprint}
             for infectedFootprint in data['infectedFootprints']:
-                self.__db.document(f"{self.eventTable}/{data['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
+                self.__db.document(f"events/{data['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
         else:
             # data{strength, companyId, infectedTime, siteId}
-            eventId = self.__db.collection(self.eventTable).add(data)[1].id
-            self.__db.collection(self.eventTable).document(eventId).update({'id': eventId})
+            eventId = self.__db.collection("events").add(data)[1].id
+            self.__db.collection("events").document(eventId).update({'id': eventId})
             return eventId
 
     def getEvent(self, data) -> dict:
         # data{eventId}
         infectedFootprints =[]
-        event = self.__db.document(f"{self.eventTable}/{data['eventId']}").get().to_dict()
-        docs = self.__db.collection(f"{self.eventTable}/{data['eventId']}/infectedFootprints").order_by('timestamp').stream()
+        event = self.__db.document(f"events/{data['eventId']}").get().to_dict()
+        docs = self.__db.collection(f"events/{data['eventId']}/infectedFootprints").order_by('timestamp').stream()
         for doc in docs:
             infectedFootprints.append(doc._data)
         event["infectedFootprints"] = infectedFootprints
