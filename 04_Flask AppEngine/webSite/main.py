@@ -181,6 +181,11 @@ def getCompany():
     company = {}
     company["sites"] = firestore.getSites({'companyId': companyId})
     company["members"] = firestore.getMembers({'companyId': companyId})
+    for member in company["members"]:
+        if member['role'] == "customer":
+            member['role'] = "顧客"
+        else:
+            member['role'] = "管理者"
     return company
 
 
