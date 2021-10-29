@@ -4,5 +4,5 @@ channelAccessToken = '[your channelAccessToken]'
 # ( 1 ) Firestore
 keyFile = '[your firestoreKey.json]'
 companyId = '[your companyId]' 
-storageBucket = '[your projectID.appspot.com]'
+storageBucket = '[your storageBucket]'
 
