@@ -14,12 +14,12 @@
                 </tr>
             </thead>
             <tbody>
-                {% for footprints in footprintsData %}
+                {% for footprint in footprints %}
                 <tr>
                     <td>{{loop.index}}</td>
-                    <td>{{footprints['companyName']}}</td>
-                    <td>{{footprints['siteName']}}</td>
-                    <td>{{footprints['timestamp']}}</td>
+                    <td>{{footprint['companyName']}}</td>
+                    <td>{{footprint['siteName']}}</td>
+                    <td>{{footprint['timestamp']}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
