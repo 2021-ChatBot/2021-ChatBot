@@ -9,7 +9,7 @@
             企業：{{company.name}}
         </div>
         <div class="field form-inline">
-            商店編號：<input class="label" name="id" value="{{site.id}}" required>
+            商店編號：<input class="label" name="id" value="{{site.id}}" {{ 'readonly' if site != {} else 'request' }}>
         </div>
         <div class="field form-inline">
             商店名稱：<input class="label" name="name" value="{{site.name}}" required>
