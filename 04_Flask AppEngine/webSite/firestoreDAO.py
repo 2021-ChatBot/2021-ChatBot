@@ -74,13 +74,13 @@ class Firestore:
         site_ref = self.__db.document(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints/{footprintId}")
         site_ref.set(footprint)
 
-    def getFootprints(self, footprint):
+    def getFootprints(self, event):
         footprints = []
-        if "infectedTime" in footprint.keys():
-            footprints_ref = self.__db.collection(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints")
-            docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", footprint["infectedTime"]).limit(1).get()
+        if "infectedTime" in event.keys():
+            footprints_ref = self.__db.collection(f"companies/{event['companyId']}/sites/{event['siteId']}/footprints")
+            docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", event["infectedTime"]).limit(1).get()
         else:
-            docs = self.__db.collection(f"members/{footprint['memberId']}/footprints").order_by(u'timestamp').stream()
+            docs = self.__db.collection(f"members/{event['memberId']}/footprints").order_by(u'timestamp').stream()
         for doc in docs:
             footprints.append(doc._data)
         return footprints
