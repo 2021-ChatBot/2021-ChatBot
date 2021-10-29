@@ -1,11 +1,9 @@
 from firebase_admin import credentials, firestore, initialize_app
-from config import Config
+from config import keyFile, storageBucket
 
-config = Config()
 
-cred = credentials.Certificate(config.firebase()['keyFile'])
-initialize_app(cred, {'storageBucket': config.firebase()['storageBucket']})
-
+cred = credentials.Certificate(keyFile)
+initialize_app(cred, {'storageBucket': storageBucket})
 
 class Firestore:
     def __init__(self):
