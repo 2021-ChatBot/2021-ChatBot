@@ -18,7 +18,7 @@
   <canvas id="qr-canvas"></canvas>
 
   <div id="qr-result" hidden="">
-    <b>Data:</b> <span id="outputData"></span>
+
   </div>
 </div>
 
@@ -96,7 +96,6 @@
   qrcode.callback = res => {
     if (res) {
       console.log(res);
-      outputData.innerText = res;
       scanning = false;
 
       video.srcObject.getTracks().forEach(track => {
@@ -106,9 +105,9 @@
       qrResult.hidden = false;
       // canvasElement.hidden = true;
       btnScanQR.hidden = false;
-      var siteInfo = outputData.innerText;
+      var siteInfo = res;
       console.log(siteInfo);
-      postFootprint(siteInfo);
+      postFootprint(res);
       scanning = true;
     }
   };
