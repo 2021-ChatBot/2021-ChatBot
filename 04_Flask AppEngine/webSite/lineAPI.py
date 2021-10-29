@@ -1,12 +1,10 @@
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
-from config import Config
-
-config = Config()
+from config import channelAccessToken
 
 
 class PushMessage:
-    def __init__(self, channelToken=config.channelAccessToken):
+    def __init__(self, channelToken=channelAccessToken):
         self.lineBotApi = LineBotApi(channelToken)
 
     def pushMessage(self, inputModel):
