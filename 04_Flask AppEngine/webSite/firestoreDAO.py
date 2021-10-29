@@ -85,12 +85,17 @@ class Firestore:
             footprints.append(doc._data)
         return footprints
 
-    def getinfectedFootprints(self, infected):
-        if infected['siteId'] != 0:
-            footprints_ref = self.__db.collection(f"companies/{infected['companyId']}/sites/{infected['siteId']}/footprints")
-        elif infected['memberId'] != 0:
-            footprints_ref = self.__db.collection(f"members/{infected['memberId']}/footprints")
-        footprints = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["timestamp"]).limit(1).get()
+    def getsiteFootprint(self, footprint):
+        footprints_ref = self.__db.collection(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints")
+        footprints = footprints_ref.order_by(u'timestamp').where("timestamp", u">", footprint["timestamp"]).limit(1).get()
+        if len(footprints) == 0:
+            return {}
+        return footprints[0].to_dict()
+
+
+    def getmemberFootprint(self, footprint):
+        footprints_ref = self.__db.collection(f"members/{footprint['memberId']}/footprints")
+        footprints = footprints_ref.order_by(u'timestamp').where("timestamp", u">", footprint["timestamp"]).limit(1).get()
         if len(footprints) == 0:
             return {}
         return footprints[0].to_dict()
