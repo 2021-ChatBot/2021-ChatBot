@@ -5,12 +5,12 @@ import json
 import time
 from datetime import datetime
 import threading
-from config import Config
+import config
 from lineAPI import PushMessage
 from firestoreDAO import Firestore
 from check import CheckFootprints
 
-config = Config()
+
 firestore = Firestore()
 line = PushMessage()
 app = Flask(__name__)
