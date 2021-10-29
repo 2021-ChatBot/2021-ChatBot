@@ -114,7 +114,7 @@ class Firestore:
     def getEvent(self, event) -> dict:
         infectedFootprints =[]
         event = self.__db.document(f"events/{event['eventId']}").get().to_dict()
-        docs = self.__db.collection(f"events/{event['eventId']}/infectedFootprints").order_by('timestamp').stream()
+        docs = self.__db.collection(f"events/{event['id']}/infectedFootprints").order_by('timestamp').stream()
         for doc in docs:
             infectedFootprints.append(doc._data)
         event["infectedFootprints"] = infectedFootprints
