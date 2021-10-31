@@ -13,11 +13,10 @@ def postMember(memberName ,lineId):
     }
     memberCollection = dbPath.collection(memberTable)
     memberList = list(doc._data for doc in memberCollection.stream())
-    for memberdata in memberList:
-        print(memberdata)
-        if memberdata["lineId"] == lineId:
-            return memberdata
-    # create memberdata in members
+    for member in memberList:
+        if member["lineId"] == lineId:
+            return member
+    # create member
     memberId = memberCollection.add(member)[1].id
     memberCollection.document(memberId).update({'id' : memberId})
 
