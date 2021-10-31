@@ -64,7 +64,7 @@ class Firestore:
         return members
 
     # --------Footprint--------------
-    def setFootprint(self, footprint):
+    def setMyFootprint(self, footprint):
         footprint_ref = self.__db.collection(f"members/{footprint['memberId']}/footprints")
         footprintId = footprint_ref.add(footprint)[1].id
         footprint['id'] = footprintId
@@ -72,32 +72,12 @@ class Firestore:
         site_ref = self.__db.document(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints/{footprintId}")
         site_ref.set(footprint)
 
-    def getFootprints(self, event):
+    def getMyFootprints(self, event):
         footprints = []
-        if "infectedTime" in event.keys():
-            footprints_ref = self.__db.collection(f"companies/{event['companyId']}/sites/{event['siteId']}/footprints")
-            docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">=", event["infectedTime"]).limit(1).get()
-        else:
-            docs = self.__db.collection(f"members/{event['memberId']}/footprints").order_by(u'timestamp').stream()
+        docs = self.__db.collection(f"members/{event['memberId']}/footprints").order_by(u'timestamp').stream()
         for doc in docs:
             footprints.append(doc._data)
         return footprints
-
-    def getsiteFootprint(self, footprint):
-        footprints_ref = self.__db.collection(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints")
-        footprints = footprints_ref.order_by(u'timestamp').where("timestamp", u">", footprint["timestamp"]).limit(1).get()
-        if len(footprints) == 0:
-            return {}
-        return footprints[0].to_dict()
-
-
-    def getmemberFootprint(self, footprint):
-        footprints_ref = self.__db.collection(f"members/{footprint['memberId']}/footprints")
-        footprints = footprints_ref.order_by(u'timestamp').where("timestamp", u">", footprint["timestamp"]).limit(1).get()
-        if len(footprints) == 0:
-            return {}
-        return footprints[0].to_dict()
-    
 
     # --------Event--------------
     def setEvent(self, event):
