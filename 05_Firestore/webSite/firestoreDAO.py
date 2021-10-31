@@ -75,13 +75,11 @@ class FirestoreDAO:
 
     # --------Event--------------
     def setEvent(self, event) -> str:
-        if "eventId" in event.keys():
-            for infectedFootprint in event['infectedFootprints']:
-                self.db.document(f"events/{event['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
-        else:
-            eventId = self.__db.collection('events').add(event)[1].id
-            self.db.collection('events').document(eventId).update({'id': eventId})
-            return eventId
+        eventId = self.__db.collection('events').add(event)[1].id
+        self.db.collection('events').document(eventId).update({'id': eventId})
+        for infectedFootprint in event['infectedFootprints']:
+            self.db.document(f"events/{event['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
+        return eventId
 
     def getEvent(self, event) -> dict:
         infectedFootprints = []
