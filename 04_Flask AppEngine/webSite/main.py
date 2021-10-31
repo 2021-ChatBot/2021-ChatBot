@@ -121,9 +121,9 @@ def infectedFootprints():
     event['companyId'], event['siteId'] = event['siteId'].split('-')
     event['strength'] = int(event['strength'])
     event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple()) + 28800
-    event['eventId'] = firestore.setEvent(event)
     CheckFootprints(event)
-    infectedFootprints = firestore.getEvent(event)['infectedFootprints']
+    event['eventId'] = firestore.setEvent(event)
+    infectedFootprints = event['infectedFootprints']
     # line push message------------------------------------------------------
     infectedText = {}
 
