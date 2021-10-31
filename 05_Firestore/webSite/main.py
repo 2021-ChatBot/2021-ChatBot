@@ -7,11 +7,10 @@ from datetime import datetime
 import threading
 import config
 from lineAPI import PushMessage
-from firestoreDAO import Firestore
-from check import CheckFootprints
+from firestoreDAO import FirestoreDAO
 
 
-firestore = Firestore()
+firestoredao = FirestoreDAO()
 line = PushMessage()
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -21,18 +20,18 @@ app.secret_key = os.urandom(24)
 @app.route("/myData/<memberId>", methods=['GET', 'POST'])
 def myData(memberId):
     if request.method == 'GET':
-        member = firestore.getMembers({'id': memberId})[0]
+        member = firestoredao.getMembers({'id': memberId})[0]
     if request.method == 'POST':
         member = request.form.to_dict()
         member['id'] = memberId
-        firestore.updateMember(member)
-        member = firestore.getMembers({'id': memberId})[0]
+        firestoredao.updateMember(member)
+        member = firestoredao.getMembers({'id': memberId})[0]
     return render_template('myData.html', member=member, title="我的個資")
 
 
 @app.route("/myForm/<memberId>", methods=['GET'])
 def myForm(memberId):
-    member = firestore.getMembers({'id': memberId})[0]
+    member = firestoredao.getMembers({'id': memberId})[0]
     return render_template('myForm.html', member=member, title="修改個資")
 
 
@@ -53,12 +52,12 @@ def setMyFootprint():
         importTime = int(time.time() + 28800)
     except:
         return jsonify('這不是實聯制QRcode')
-    companies = firestore.getCompanies()
+    companies = firestoredao.getCompanies()
     for company in companies:
-        sites = firestore.getSites({'companyId': company['id'], 'id': siteId})
+        sites = firestoredao.getSites({'companyId': company['id'], 'id': siteId})
         if sites[0] != None:
             message = {
-                "lineId": firestore.getMembers({'id': memberId})[0]['lineId'],
+                "lineId": firestoredao.getMembers({'id': memberId})[0]['lineId'],
                 "messageType": "textTemplate",
                 "content": "掃碼成功\n"
                            f"商店: {sites[0]['name']}\n"
@@ -74,7 +73,7 @@ def setMyFootprint():
                 'companyId': company['id'],
                 'timestamp': importTime
             }
-            firestore.setMyFootprint(footprint)
+            firestoredao.setMyFootprint(footprint)
 
             return jsonify(sites[0]['name'] + '  到店掃碼成功')
 
@@ -85,12 +84,11 @@ def setMyFootprint():
 @app.route("/myFootprints/<memberId>", methods=['GET'])
 def getMyFootprint(memberId):
     footprints = []
-
-    for footprint in firestore.getMyFootprints({'memberId': memberId}):
+    for footprint in firestoredao.getMyFootprints({'memberId': memberId}):
         footprints.append(
             {
-                'companyName': firestore.getCompanies({'companyId': footprint['companyId']})[0]['name'],
-                'siteName': firestore.getSites({'companyId': footprint['companyId'], 'id': footprint['siteId']})[0]['name'],
+                'companyName': firestoredao.getCompanies({'companyId': footprint['companyId']})[0]['name'],
+                'siteName': firestoredao.getSites({'companyId': footprint['companyId'], 'id': footprint['siteId']})[0]['name'],
                 'timestamp': str(datetime.utcfromtimestamp(footprint['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
             }
         )
@@ -107,9 +105,9 @@ def report(memberId):
 @app.route("/checkFootprints/<memberId>", methods=['GET'])
 def checkFootprints(memberId):
     sites = {}
-    companies = firestore.getCompanies()
+    companies = firestoredao.getCompanies()
     for company in companies:
-        for site in firestore.getSites({'companyId': company['id']}):
+        for site in firestoredao.getSites({'companyId': company['id']}):
             sites.update({f"{company['id']}-{site['id']}": f'{company["name"]} {site["name"]}'})
     return render_template('checkFootprints.html', sites=sites, title="疫情調查")
 
@@ -120,20 +118,20 @@ def infectedFootprints():
     event = request.form.to_dict()
     event['companyId'], event['siteId'] = event['siteId'].split('-')
     event['strength'] = int(event['strength'])
-    event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple())
-    CheckFootprints(event)
-    event['eventId'] = firestore.setEvent(event)
+    event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple()) + 28800
+    event['infectedFootprints'] = firestoredao.checkFootprints(event)
+    event['eventId'] = firestoredao.setEvent(event)
     infectedFootprints = event['infectedFootprints']
     # line push message------------------------------------------------------
     infectedText = {}
-
+    print(infectedFootprints)
     for infectedMember in infectedFootprints:
-        infectedMember['siteName'] = firestore.getSites({'companyId': infectedMember['companyId'], 'id': infectedMember['siteId']})[0]['name']
-        infectedMember['companyName'] = firestore.getCompanies({'companyId': infectedMember['companyId']})[0]['name']
-        infectedMember['name'] = firestore.getMembers({'id': infectedMember['memberId']})[0]['name']
+        infectedMember['siteName'] = firestoredao.getSites({'companyId': infectedMember['companyId'], 'id': infectedMember['siteId']})[0]['name']
+        infectedMember['companyName'] = firestoredao.getCompanies({'companyId': infectedMember['companyId']})[0]['name']
+        infectedMember['name'] = firestoredao.getMembers({'id': infectedMember['memberId']})[0]['name']
         infectedMember['infectedTime'] = str(datetime.utcfromtimestamp(infectedMember['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
         if infectedMember['name'] not in infectedText.keys():
-            infectedMemberlineId = firestore.getMembers({'id': infectedMember['memberId']})[0]["lineId"]
+            infectedMemberlineId = firestoredao.getMembers({'id': infectedMember['memberId']})[0]["lineId"]
             infectedText[infectedMember['name']] = {"content": "", "lineId": infectedMemberlineId}
         infectedText[infectedMember['name']]["content"] += f"\n\n感染地點: {infectedMember['siteName']}\n感染時間: {infectedMember['infectedTime']}"
 
@@ -152,9 +150,9 @@ def infectedFootprints():
         'strength': str(request.values['strength']),
         "infectedTime": str(request.values['infectedTime']).replace("T", " "),
         "amount": len(set([member['memberId'] for member in infectedFootprints])),
-        "name": firestore.getSites({'companyId': event['companyId'], 'id': event['siteId']})[0]["name"]
+        "name": firestoredao.getSites({'companyId': event['companyId'], 'id': event['siteId']})[0]["name"]
     }
-    infectedFootprints = sorted(infectedFootprints, key=lambda i: i['name'])
+    infectedFootprints = sorted(infectedFootprints, key=lambda i: (i['name'], i['timestamp']))
     return render_template('infectedFootprints.html', infectedList=infectedFootprints, result=result, title="疫情調查")
 
 
@@ -162,10 +160,10 @@ def infectedFootprints():
 @app.route("/myCompany/<memberId>", methods=['GET'])
 @app.route("/myCompany", methods=['GET'])
 def myCompany(memberId=None):
-    companies = firestore.getCompanies()
+    companies = firestoredao.getCompanies()
     company = {}
-    company["sites"] = firestore.getSites({'companyId': config.companyId})
-    company["members"] = firestore.getMembers({'companyId': config.companyId})
+    company["sites"] = firestoredao.getSites({'companyId': config.companyId})
+    company["members"] = firestoredao.getMembers({'companyId': config.companyId})
     for member in company["members"]:
         if member['role'] == "customer":
             member['role'] = "顧客"
@@ -179,13 +177,8 @@ def myCompany(memberId=None):
 def getCompany():
     companyId = request.get_json()["companyId"]
     company = {}
-    company["sites"] = firestore.getSites({'companyId': companyId})
-    company["members"] = firestore.getMembers({'companyId': companyId})
-    for member in company["members"]:
-        if member['role'] == "customer":
-            member['role'] = "顧客"
-        else:
-            member['role'] = "管理者"
+    company["sites"] = firestoredao.getSites({'companyId': companyId})
+    company["members"] = firestoredao.getMembers({'companyId': companyId})
     return company
 
 
@@ -193,10 +186,10 @@ def getCompany():
 @app.route("/mySite/<companyId>", methods=['GET'])
 @app.route("/mySite/<companyId>/<siteId>", methods=['GET'])
 def mySite(companyId, siteId=None):
-    company = firestore.getCompanies({'companyId': companyId})[0]
+    company = firestoredao.getCompanies({'companyId': companyId})[0]
     site = {}
     if siteId != None:
-        site = firestore.getSites({'companyId': companyId, 'id': siteId})[0]
+        site = firestoredao.getSites({'companyId': companyId, 'id': siteId})[0]
 
     return render_template('mySite.html', company=company, site=site, title='增修商店')
 
@@ -205,7 +198,7 @@ def mySite(companyId, siteId=None):
 @app.route("/mySite", methods=['POST'])
 def newSite():
     site = request.form.to_dict()
-    firestore.setSite(site)
+    firestoredao.setSite(site)
     return redirect(url_for('myCompany'))
 
 
