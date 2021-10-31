@@ -7,9 +7,6 @@
         <label for="userList">
             感染商店：
             <select id="companySelect" name="siteId" class="custom-select">
-                <option>
-                    選擇商店
-                </option>
                 {% for id, name in sites.items() %}
                 <option value="{{ id }}">
                     {{ name }}
