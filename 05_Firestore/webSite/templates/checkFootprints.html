@@ -4,12 +4,12 @@
 <h1>{{ title }}</h1>
 <form action="/infectedFootprints" method="POST">
     <div class="form-group">
-        <label for="userList">
+        <label>
             感染商店：
-            <select id="companySelect" name="siteId" class="custom-select">
-                {% for id, name in sites.items() %}
-                <option value="{{ id }}">
-                    {{ name }}
+            <select  name="siteOfCompany" class="custom-select" required>
+                {% for siteOfCompany_id, siteOfCompany_name in sitesOfCompany.items() %}
+                <option value="{{ siteOfCompany_id }}">
+                    {{ siteOfCompany_name }}
                 </option>
                 {% endfor %}
             </select>
@@ -22,7 +22,7 @@
             <input type="radio" name="strength" value="3">3&nbsp
         </label>
         <br>
-        <label for="infectionTime">
+        <label>
             感染時間：<input type="datetime-local" class="form-control" id="infectedTime" name="infectedTime"
                 required="required" value="" step="1">
         </label>
