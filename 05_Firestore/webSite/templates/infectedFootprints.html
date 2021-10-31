@@ -15,11 +15,11 @@
       <div class="form-group">
         <label class="label">
           事件 : {{result.eventId}}<br>
-          感染商店 : {{result.name}}<br>
+          感染商店 : {{result.siteName}}<br>
           感染時間 : {{result.infectedTime}}<br>
           傳播力道 : {{result.strength}}<br>
           感染總人數：{{result.amount}}<br>
-          感染足跡數 : {{infectedList|length}}<br>
+          感染足跡數 : {{result.footprints|length}}<br>
         </label>
     </form>
   </div>
@@ -39,13 +39,13 @@
       </tr>
     </thead>
     <tbody id=tbody>
-      {% for infectedMember in infectedList %}
+      {% for footprint in result.footprints %}
       <tr>
         <td>{{loop.index}}</td>
-        <td>{{infectedMember.name}}</td>
-        <td>{{infectedMember.companyName}}</td>
-        <td>{{infectedMember.siteName}}</td>
-        <td>{{infectedMember.infectedTime}}</td>
+        <td>{{footprint.memberName}}</td>
+        <td>{{footprint.companyName}}</td>
+        <td>{{footprint.siteName}}</td>
+        <td>{{footprint.infectedTime}}</td>
       </tr>
       {% endfor %}
     </tbody>
