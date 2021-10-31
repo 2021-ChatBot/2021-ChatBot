@@ -10,7 +10,7 @@ class Firestore:
         self.__db = firestore.client()
 
     # --------Company--------------
-    def getCompany(self, company=None):
+    def getCompanies(self, company=None):
         companies = []
         if company:
             doc = self.__db.document(f"companies/{company['companyId']}")
@@ -29,7 +29,7 @@ class Firestore:
         del site["companyId"]
         site_ref.set(site)
 
-    def getSite(self, site) -> list:
+    def getSites(self, site) -> list:
         sites = []
         if "id" in site:
             doc = self.__db.document(f"companies/{site['companyId']}/sites/{site['id']}").get()
@@ -47,7 +47,7 @@ class Firestore:
         doc = self.__db.collection("members").document(member['id'])
         doc.update(member)
 
-    def getMember(self, company):
+    def getMembers(self, company):
         members = []
         if "companyId" in company.keys():
             docs = self.__db.collection(f"companies/{company['companyId']}/members").stream()
