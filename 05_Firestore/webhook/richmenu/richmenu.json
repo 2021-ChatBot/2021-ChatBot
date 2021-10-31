@@ -1,0 +1,85 @@
+{
+  "size": {
+    "width": 1200,
+    "height": 810
+  },
+  "selected": true,
+  "name": "epidemic",
+  "chatBarText": "智能防疫社群主選單",
+  "areas": [
+    {
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/newFootprint/",
+        "data": "?openExternalBrowser=1"
+        
+      }
+    },
+    {
+      "bounds": {
+        "x": 400,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/myFootprints/"
+      }
+    },
+    {
+      "bounds": {
+        "x": 800,
+        "y": 0,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri": "/myData/"
+      }
+    },
+    {
+      "bounds": {
+        "x": 0,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri": "/myCompany/"
+      }
+    },
+    {
+      "bounds": {
+        "x": 400,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {
+        "type": "uri",
+        "uri" : "/checkFootprints/"
+      }
+    },
+    {
+      "bounds": {
+        "x": 800,
+        "y": 405,
+        "width": 400,
+        "height": 405
+      },
+      "action": {        
+        "type": "uri",
+        "uri" : "/report/"
+      }
+    }
+ ]
+}
