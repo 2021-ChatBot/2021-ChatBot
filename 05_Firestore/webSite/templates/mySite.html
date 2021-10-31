@@ -5,14 +5,14 @@
 <form action="/mySite" method="POST">
     <label class="label">
         <div class="field">
-            <input type="hidden" name="companyId" value={{company.id}}>
-            企業：{{company.name}}
+            <input type="hidden" name="companyId" value={{result.company.id}}>
+            企業：{{result.company.name}}
         </div>
         <div class="field form-inline">
-            商店編號：<input class="label" name="id" value="{{site.id}}" {{ 'readonly' if site != {} else 'request' }}>
+            商店編號：<input class="label" name="id" value="{{result.site.id}}" {{ 'readonly' if site != {} else 'request' }}>
         </div>
         <div class="field form-inline">
-            商店名稱：<input class="label" name="name" value="{{site.name}}" required>
+            商店名稱：<input class="label" name="name" value="{{result.site.name}}" required>
         </div>
         <div class="field form-inline">
           <button class="button is-link">增修</button>
