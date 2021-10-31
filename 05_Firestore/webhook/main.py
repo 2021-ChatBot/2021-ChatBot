@@ -1,6 +1,6 @@
 import dialogflowClient as dialogflow
 import richMenu_handler
-import firestoreDAO as firestore
+import firestoreDAO
 from linebot import WebhookHandler, LineBotApi
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
@@ -70,5 +70,5 @@ def handle_queryResult(queryResult, lineId):
 
 def postMemberFlow(lineId, name) -> dict:
     # firestore 註冊
-    member = firestore.postMember(name, lineId)
+    member = firestoreDAO.postMember(name, lineId)
     return member
