@@ -120,7 +120,7 @@ def infectedFootprints():
     event = request.form.to_dict()
     event['companyId'], event['siteId'] = event['siteId'].split('-')
     event['strength'] = int(event['strength'])
-    event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple()) + 28800
+    event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple())
     CheckFootprints(event)
     event['eventId'] = firestore.setEvent(event)
     infectedFootprints = event['infectedFootprints']
