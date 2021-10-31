@@ -4,19 +4,16 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script type="text/javascript">
-    function changeCompany() {
-        var companyId = document.getElementById("companySelect").value;
-        console.log(companyId);
-        getCompany(companyId);
-    }
     function newSite() {
-        var companyId = document.getElementById("companySelect").value;
+        var companyId = document.getElementById("companySelected").value;
         window.location.href = "/mySite/" + companyId ;
     };
 
-    function getCompany(companyId) {
-        var requestURL = '/getCompany'
+    function getCompany() {
+        var requestURL = '/getCompany';
         var company = {};
+        var companyId = document.getElementById("companySelected").value;
+
         company["companyId"] = companyId
         $.ajax({
             url: requestURL,
@@ -25,11 +22,11 @@
             dataType: "json",
             contentType: "application/json;charset=utf-8",
 
-            success: function (returnData) {
+            success: function (companyData) {
                 $("#siteTable tr").remove();
                 $("#memberTable tr").remove();
-                createSiteTable(returnData["sites"], companyId);
-                createMemberTable(returnData["members"]);
+                createSiteTable(companyData["sites"]);
+                createMemberTable(companyData["members"]);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log(xhr.status);
@@ -39,7 +36,7 @@
     }
 
     function createSiteTable(sites) {
-        var companyId = document.getElementById("companySelect").value;
+        var companyId = document.getElementById("companySelected").value;
         siteTable = document.getElementById("siteTable");
         siteTable.innerHTML += '<tr><th>' + '商店編號' + '</th><th>' + '商店名稱' + '</th><th>' + '編輯' + '</th></tr>';
         for (var i = 0; i < sites.length; i++) {
@@ -60,12 +57,12 @@
 
 <h1 class="title">{{title}}</h1>
 <div id="companyList">
-    <select id="companySelect" onchange="changeCompany()" style="font-size:20px;" class="custom-select">
-        {% for company in companies %}
-            {% if company['id'] == companyId %}
-            <option selected="selected" value="{{ company['id'] }}">{{ company['name'] }}</option>
+    <select id="companySelected" onchange="getCompany()" style="font-size:20px;" class="custom-select">
+        {% for company in result.companies %}
+            {% if company.id == result.myCompanyId %}
+            <option selected="selected" value="{{ company.id }}">{{ company.name }}</option>
             {% else %}
-            <option value="{{ company['id'] }}">{{ company['name'] }}</option>
+            <option value="{{ company.id }}">{{ company.name }}</option>
             {% endif %}
         {% endfor %}
     </select>
@@ -83,11 +80,11 @@
                 <th>商店名稱</th>
                 <th>編輯</th>
             </tr>
-            {% for site in company["sites"] %}
+            {% for site in result.sites %}
             <tr>
-                <th> {{ site["id"] }} </th>
-                <th>{{ site["name"] }}</th>
-                <th><a class="button is-link" href="/mySite/{{companyId}}/{{site['id']}}">修改</a></th>
+                <th> {{ site.id }} </th>
+                <th>{{ site.name }}</th>
+                <th><a class="button is-link" href="/mySite/{{result.myCompanyId}}/{{site.id}}">修改</a></th>
             <tr>
                 {% endfor %}
         </tbody>
@@ -101,11 +98,11 @@
                     <th>成員姓名</th>
                     <th>成員角色</th>
                 </tr>
-                {% for member in company["members"] %}
+                {% for member in result.members %}
                 <tr>
-                    <th>{{ member["id"] }} </th>
-                    <th>{{ member["name"] }}</th>
-                    <th>{{ member["role"] }}</th>
+                    <th>{{ member.id }} </th>
+                    <th>{{ member.name }}</th>
+                    <th>{{ member.role }}</th>
                 <tr>
                     {% endfor %}
             </tbody>
