@@ -74,7 +74,7 @@ def setMyFootprint():
                 'companyId': company['id'],
                 'timestamp': importTime
             }
-            firestore.setFootprint(footprint)
+            firestore.setMyFootprint(footprint)
 
             return jsonify(sites[0]['name'] + '  到店掃碼成功')
 
@@ -86,7 +86,7 @@ def setMyFootprint():
 def getMyFootprint(memberId):
     footprints = []
 
-    for footprint in firestore.getFootprints({'memberId': memberId}):
+    for footprint in firestore.getMyFootprints({'memberId': memberId}):
         footprints.append(
             {
                 'companyName': firestore.getCompanies({'companyId': footprint['companyId']})[0]['name'],
