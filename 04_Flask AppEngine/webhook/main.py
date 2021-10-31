@@ -70,5 +70,5 @@ def handle_queryResult(queryResult, lineId):
 
 def postMemberFlow(lineId, name) -> dict:
     # firestore 註冊
-    memberData = firestore.postMember(name, lineId)
-    return memberData
+    member = firestore.postMember(name, lineId)
+    return member
