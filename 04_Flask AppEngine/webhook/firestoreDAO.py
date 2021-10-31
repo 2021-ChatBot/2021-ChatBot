@@ -19,12 +19,8 @@ def postMember(memberName ,lineId):
     # create member
     memberId = memberCollection.add(member)[1].id
     memberCollection.document(memberId).update({'id' : memberId})
-
+    member['id'] = memberId
     # create memberid in company
     dbPath.document(f"companies/{companyId}/members/{memberId}").set(None)
-
-    return {
-        "name" : memberName,
-        "lineId" : lineId,
-        "id" : memberId
-    }
+    
+    return member
