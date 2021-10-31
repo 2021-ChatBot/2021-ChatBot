@@ -88,36 +88,42 @@ class FirestoreDAO:
             infectedFootprints.append(doc._data)
         event["infectedFootprints"] = infectedFootprints
         return event
-
+    
+    # --------Check--------------
     def checkFootprints(self, event):
         infected = {
             'companyId': event['companyId'],
             'siteId': event['siteId'],
             'memberId': 0,
             'infectedTime': event['infectedTime'],
-            'strength': event['strength'],
+            'infectedFootprintIds' : set(),
             'infectedFootprints': []
         }
-        try:
-            self.check(infected)
-        except IndexError:
-            pass
+        self.check(infected, event['strength'])
         return infected['infectedFootprints']
 
-    def check(self, infected):
-        if infected['strength'] > 0:
+    def check(self, infected, strength):
+        if strength > 0:
             if infected['siteId'] != 0:
                 footprints_ref = self.__db.collection(f"companies/{infected['companyId']}/sites/{infected['siteId']}/footprints")
-                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['strength']).get()
+                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(strength).get()
                 footprints = [doc._data for doc in docs]
-                infected['siteId'] = 0
-                infected['memberId'] = footprints[0]['memberId']
-            else:
+
+            elif infected['memberId'] != 0:
                 footprints_ref = self.__db.collection(f"members/{infected['memberId']}/footprints")
-                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['strength']).get()
+                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(strength).get()
                 footprints = [doc._data for doc in docs]
-                infected['siteId'] = footprints[0]['siteId']
-            infected['infectedTime'] = footprints[0]['timestamp']
-            infected['strength'] -= 1
-            infected['infectedFootprints'].extend(footprints)
-            self.check(infected)
+
+            for footprint in footprints:
+                if infected['siteId'] != 0:
+                    infected['memberId'] = footprint['memberId']
+                    infected['siteId'] = 0
+                elif infected['memberId'] != 0:
+                    infected['siteId'] = footprint['siteId']
+                    infected['memberId'] = 0
+                if footprint['id'] not in infected["infectedFootprintIds"]:
+                    infected["infectedFootprintIds"].add(footprint['id'])
+                    infected['infectedFootprints'].append(footprint)
+                infected['infectedTime'] = footprint['timestamp']
+                strength -= 1
+                self.check(infected, strength)
