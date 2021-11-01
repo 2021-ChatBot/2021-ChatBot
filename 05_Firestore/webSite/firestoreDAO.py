@@ -109,12 +109,10 @@ class FirestoreDAO:
                 footprints_ref = self.__db.collection(f"companies/{infected['companyId']}/sites/{infected['siteId']}/footprints")
                 docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
                 footprints = [doc._data for doc in docs]
-
             elif infected['memberId'] != 0:
                 footprints_ref = self.__db.collection(f"members/{infected['memberId']}/footprints")
                 docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
                 footprints = [doc._data for doc in docs]
-
             for footprint in footprints:
                 infected['infectedTime'] = footprint['timestamp']
                 infected['myStrength'] -= 1
@@ -124,9 +122,9 @@ class FirestoreDAO:
                 elif infected['memberId'] != 0:
                     infected['siteId'] = footprint['siteId']
                     infected['memberId'] = 0
-                # 遞迴尋找成員下一間商店足跡
+
                 self.check(infected)
-                # 掛上去一個足跡，過濾重複感染足跡
+
                 if footprint not in self.infectedFootprints:
                     self.infectedFootprints.append(footprint)
                 infected['myStrength'] = infected['strength'] - 1
