@@ -90,7 +90,7 @@ class FirestoreDAO:
         return event
     
     # --------Check--------------
-        def checkFootprints(self, event):
+    def checkFootprints(self, event):
         infected = {
             'companyId': event['companyId'],
             'siteId': event['siteId'],
