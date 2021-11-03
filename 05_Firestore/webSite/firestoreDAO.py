@@ -1,11 +1,8 @@
-from firebase_admin import credentials, firestore, initialize_app
-from config import keyFile, storageBucket
-
+from firebase_admin import firestore, initialize_app
 
 class FirestoreDAO:
     def __init__(self):
-        cred = credentials.Certificate(keyFile)
-        initialize_app(cred, {'storageBucket': storageBucket})
+        initialize_app()
         self.__db = firestore.client()
 
     # --------Company--------------
@@ -41,6 +38,30 @@ class FirestoreDAO:
         return sites
 
     # --------Member--------------
+    def createMember(self, memberData):
+        member = {
+            "name" : memberData['name'],
+            "lineId" : memberData['lineId'],
+            "role" : 'customer'
+        }
+        memberCollection = self.__db.collection(f"members")
+        memberList = list(doc._data for doc in memberCollection.stream())
+        for n in memberList:
+            if n["lineId"] == memberData['lineId']:
+                return n
+
+        # create member
+        memberId = memberCollection.add(member)[1].id
+        memberCollection.document(memberId).update({'id' : memberId})
+
+        # create memberid in company
+        self.__db.document(f"companies/{memberData['companyId']}/members/{memberId}").set(None)
+        return {
+            "name" : memberData['name'],
+            "lineId" : memberData['lineId'],
+            "id" : memberId
+        }
+
     def updateMember(self, member):
         doc = self.__db.document(f"members/{member['id']}")
         doc.update(member)

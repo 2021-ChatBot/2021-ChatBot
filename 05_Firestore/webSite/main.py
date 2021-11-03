@@ -215,6 +215,14 @@ def newSite():
     return redirect(url_for('myCompany'))
 
 
+# ----------------------------註冊綁定------------------------------------
+@app.route("/postMemberFlow", methods = ['POST'])
+def postMemberFlow():
+    memberInfo = request.get_json(force=True) 
+    response = firestoreDAO.createMember(memberInfo)
+    return jsonify(response)
+
+
 port = int(os.environ.get('PORT', 8080))
 if __name__ == '__main__':
     app.run(threaded = True, host = '127.0.0.1', port = port)

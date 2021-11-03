@@ -1,8 +1,9 @@
+import secretManager
+
 # ( 0 ) Line Channel
-channelAccessToken = '[your channelAccessToken]'
+secretResourceId = '[your secret resource id]'
+versionId = '1'
+channelAccessToken = secretManager.access_secret_version(secretResourceId, versionId)
 
 # ( 1 ) Firestore
-keyFile = '[your firestoreKey.json]'
-companyId = '[your companyId]' 
-storageBucket = '[your storageBucket]'
-
+companyId = '[your company id]' 
