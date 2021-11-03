@@ -1,24 +1,18 @@
-projectId = "[your project Id]"
+import os
+
+projectId = "[your project id]"
 
 #（0）Company
-
-role = "customer"
-companyId = "[your companyId]"
+companyId = "[your company id]"
 WebUrl = "[your app engine url]"
 
 #（1）Line Channel
-
-channelSecrect = "[your channelSecrect]"
-channelAccessToken = "[your channelAccessToken]"
+channelSecrect = os.environ ['channelSecrect']
+channelAccessToken = os.environ ['channelAccessToken']
 richmenu_json_path = "richmenu/richmenu.json"
 richmenu_png_path = "richmenu/richmenu.png"
 originmenu_json_path = "richmenu/origin.json"
 
 #（2）Dialogflow 
-
 languageCode = "zh-TW"
-serviceAccountKey = "[your serviceAccountKey.json]"
 
-#（3）Firestore
-
-firestoreKey = '[your firestoreKey.json]'

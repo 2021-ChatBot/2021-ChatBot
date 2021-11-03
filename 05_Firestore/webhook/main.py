@@ -1,10 +1,10 @@
 import dialogflowClient as dialogflow
 import richMenu_handler
-import firestoreDAO
+import requests, json
 from linebot import WebhookHandler, LineBotApi
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
-from config import channelSecrect, channelAccessToken
+from config import channelSecrect, channelAccessToken, WebUrl, companyId
 
 # （0） Messages
 welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 >')
@@ -68,7 +68,14 @@ def handle_queryResult(queryResult, lineId):
             lineBotApi.push_message(lineId, message)
 
 
-def postMemberFlow(lineId, name) -> dict:
+def postMemberFlow(lineId, name):
     # firestore 註冊
-    member = firestoreDAO.postMember(name, lineId)
-    return member
+    memberData = {
+        'name'       : name,
+        'lineId'     : lineId,
+        'companyId'  : companyId
+    }
+    response = requests.post(WebUrl + '/postMemberFlow', json = memberData)
+    member = response.content
+    memberToDict = json.loads(member)
+    return memberToDict
