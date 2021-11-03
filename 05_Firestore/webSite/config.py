@@ -1,9 +1,6 @@
-import secretManager
-
 # ( 0 ) Line Channel
 secretResourceId = '[your secret resource id]'
-versionId = '1'
-channelAccessToken = secretManager.access_secret_version(secretResourceId, versionId)
+version = '1' # 若secret沒有更新的情況下，version為1
 
 # ( 1 ) Firestore
 companyId = '[your company id]' 
