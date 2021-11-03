@@ -7,7 +7,7 @@ companyId = "[your company id]"
 WebUrl = "[your app engine url]"
 
 #（1）Line Channel
-channelSecrect = os.environ ['channelSecrect']
+channelSecret = os.environ ['channelSecret']
 channelAccessToken = os.environ ['channelAccessToken']
 richmenu_json_path = "richmenu/richmenu.json"
 richmenu_png_path = "richmenu/richmenu.png"
