@@ -4,8 +4,7 @@ from config import topicId, projectId
 
 publisher = pubsub_v1.PublisherClient()
 
-
-def edgePub(dataModel):
+def publish_messages(messages):
     publisher.publish(publisher.topic_path(projectId, topicId)
-                      , data=bytes(json.dumps(dataModel),encoding = "utf8")
+                      , data=bytes(json.dumps(messages), encoding="utf8")
                       )
