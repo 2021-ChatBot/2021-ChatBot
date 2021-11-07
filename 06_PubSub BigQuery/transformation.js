@@ -1,30 +1,37 @@
 function transform(inJson) {
       var messages = JSON.parse(inJson);
-
+      
       if (messages.hasOwnProperty("member")){
-            var member = {
-                  "memberId" :  messages.member.id,
-                  "companyName" : messages.member.companyName
-            }
-            return JSON.stringify(member);
-
-      }else if(messages.hasOwnProperty("site")){
-            var site = {
-                  "siteId" : messages.site.id,
-                  "companyName" : messages.site.companyName
-            }
-            return JSON.stringify(site);
-
-      }else if(messages.hasOwnProperty("footprint")){
             var footprint = {
-                  "footprintId" : messages.footprint.id,
-                  "memberId" : messages.footprint.memberId,
-                  "siteId" : messages.footprint.siteId,
-                  "companyName" : messages.footprint.companyName
+                  "companyName"  : messages.member.companyName,
+                  "siteId"       : null,
+                  "memberId"     : messages.member.id,
+                  "footprintId"  : null
             }
             return JSON.stringify(footprint);
+      }
 
-      }else if(messages.hasOwnProperty("event")){
+      else if(messages.hasOwnProperty("site")){
+            var footprint = {
+                  "companyName"  : messages.site.companyName,
+                  "siteId"       : messages.site.id,
+                  "memberId"     : null,
+                  "footprintId"  : null
+            }
+            return JSON.stringify(footprint);
+      }
+
+      else if(messages.hasOwnProperty("footprint")){
+            var footprint = {
+                  "companyName" : messages.footprint.companyName,
+                  "siteId" : messages.footprint.siteId,
+                  "memberId" : messages.footprint.memberId,
+                  "footprintId" : messages.footprint.id
+            }
+            return JSON.stringify(footprint);
+      }
+
+      else if(messages.hasOwnProperty("event")){
             var infected = {
                   "eventId" : messages.event.eventId,
                   "companyName" : messages.event.companyName,
@@ -36,4 +43,4 @@ function transform(inJson) {
             }
             return JSON.stringify(infected);
       }
-}
+    }
