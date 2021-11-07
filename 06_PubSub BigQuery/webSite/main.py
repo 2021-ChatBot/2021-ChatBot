@@ -20,7 +20,7 @@ app.secret_key = os.urandom(24)
 
 # ----------------------------註冊綁定------------------------------------
 @app.route("/memberRegister", methods=['POST'])
-def postMemberFlow():
+def memberRegister():
     memberData = request.get_json(force=True)
     member = firestoreDAO.setMember(memberData)
     if "setMember" in member.keys():
