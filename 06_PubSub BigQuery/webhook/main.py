@@ -70,7 +70,7 @@ def handle_queryResult(queryResult, lineId):
 
 def postMemberFlow(lineId, name):
     # firestore 註冊
-    response = requests.post(WebUrl + '/postMemberFlow', json={'name' : name, 'lineId' : lineId})
+    response = requests.post(WebUrl + '/memberRegister', json={'name' : name, 'lineId' : lineId})
     member = response.content
     memberToDict = json.loads(member)
     return memberToDict
