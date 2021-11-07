@@ -56,8 +56,8 @@ def handle_queryResult(queryResult, lineId):
             if member:
                 message = TextSendMessage(
                     text=registerSuccessText + 'memberId=' + member['id'] + '\n' \
-                         + 'name=' + member['name'] + '\n' \
-                         + 'lineId=' + member['lineId']
+                                             + 'name=' + member['name'] + '\n' \
+                                             + 'lineId=' + member['lineId']
                 )
                 lineBotApi.push_message(lineId, message)
             richMenu_handler.create_richMenu(lineId,linebotapi= lineBotApi, memberId=member["id"], timeflag=False)
@@ -70,12 +70,7 @@ def handle_queryResult(queryResult, lineId):
 
 def postMemberFlow(lineId, name):
     # firestore 註冊
-    memberData = {
-        'name'       : name,
-        'lineId'     : lineId,
-        'companyId'  : companyId
-    }
-    response = requests.post(WebUrl + '/postMemberFlow', json = memberData)
+    response = requests.post(WebUrl + '/postMemberFlow', json={'name' : name, 'lineId' : lineId})
     member = response.content
     memberToDict = json.loads(member)
     return memberToDict
