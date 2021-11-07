@@ -4,7 +4,7 @@ import requests, json
 from linebot import WebhookHandler, LineBotApi
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import FollowEvent, TextSendMessage, MessageEvent, TextMessage
-from config import channelSecrect, channelAccessToken, WebUrl, companyId
+from config import channelSecrect, channelAccessToken, WebUrl
 
 # （0） Messages
 welcomeMessage = TextSendMessage(text='歡迎加入 < 智能防疫社群 >')
