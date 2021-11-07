@@ -168,7 +168,7 @@ class FirestoreDAO:
                 if footprint not in self.infectedFootprints:
                     self.infectedFootprints.append(footprint)
                     # - pubsub
-                    Event = {
+                    event = {
                         "eventId": self.event["eventId"],
                         "companyName": self.__db.document(f"companies/{infected['companyId']}").get().to_dict()["name"],
                         "siteId": footprint["siteId"],
@@ -178,7 +178,7 @@ class FirestoreDAO:
                         "id": footprint["id"],
                         "footprintTimestamp": footprint["timestamp"]
                     }
-                    publishThread = threading.Thread(target=publish_messages, args=({'event' : Event},))
+                    publishThread = threading.Thread(target=publish_messages, args=({'event' : event},))
                     publishThread.start()
 
                 infected['myStrength'] = infected['strength'] - 1
