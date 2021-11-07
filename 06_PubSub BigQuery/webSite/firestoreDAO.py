@@ -1,4 +1,7 @@
 from firebase_admin import firestore, initialize_app
+from config import companyId
+from publish import publish_messages
+import threading
 
 
 class FirestoreDAO:
@@ -25,6 +28,7 @@ class FirestoreDAO:
         site_ref = self.__db.document(f"companies/{site['companyId']}/sites/{site['id']}")
         del site["companyId"]
         site_ref.set(site)
+        return site
 
     def getSites(self, site) -> list:
         sites = []
@@ -39,18 +43,24 @@ class FirestoreDAO:
         return sites
 
     # --------Member--------------
-    def createMember(self, myMember):
+    def setMember(self, myMember):
         myMember['role'] = 'customer'
-        companyId = myMember['companyId']
-        del myMember['companyId']
         memberCollection = self.__db.collection("members")
         memberList = list(doc._data for doc in memberCollection.stream())
         for member in memberList:
             if member["lineId"] == myMember['lineId']:
+                # check company has member
+                for docs in self.__db.collection(f"companies/{companyId}/members").stream():
+                    if docs.id == member['id']:
+                        return member
+
+                # create memberid in company
+                self.__db.document(f"companies/{companyId}/members/{member['id']}").set(None)
+                member["setMember"] = True
                 return member
 
-
         # create member
+
         memberId = memberCollection.add(myMember)[1].id
         memberCollection.document(memberId).update({'id': memberId})
 
@@ -59,7 +69,8 @@ class FirestoreDAO:
         return {
             "name": myMember['name'],
             "lineId": myMember['lineId'],
-            "id": memberId
+            "id": memberId,
+            "setMember": True
         }
 
     def updateMember(self, member):
@@ -74,8 +85,9 @@ class FirestoreDAO:
                 doc = self.__db.document(f"members/{doc.id}")
                 members.append(doc.get().to_dict())
         else:
-            doc = self.__db.collection('members').document(company["id"])
-            members.append(doc.get().to_dict())
+            doc = self.__db.collection('members').document(company["id"]).get()
+            if doc.to_dict() != None:
+                members.append(doc.to_dict())
         return members
 
     # --------Footprint--------------
@@ -96,12 +108,15 @@ class FirestoreDAO:
 
     # --------Event--------------
     def setEvent(self, event) -> str:
-        infectedFootprints = event["infectedFootprints"]
-        del event["infectedFootprints"]
-        eventId = self.__db.collection('events').add(event)[1].id
-        self.__db.collection('events').document(eventId).update({'id': eventId})
-        for infectedFootprint in infectedFootprints:
-            self.__db.document(f"events/{eventId}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
+        if 'eventId' not in event.keys():
+            eventId = self.__db.collection('events').add(None)[1].id
+        else:
+            infectedFootprints = event["infectedFootprints"]
+            eventId = event['eventId']
+            del event["infectedFootprints"]
+            self.__db.collection('events').document(eventId).update(event)
+            for infectedFootprint in infectedFootprints:
+                self.__db.document(f"events/{eventId}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
         return eventId
 
     def getEvent(self, event) -> dict:
@@ -115,13 +130,14 @@ class FirestoreDAO:
 
     # --------Check--------------
     def checkFootprints(self, event):
+        self.event = event
         infected = {
             'companyId': event['companyId'],
             'siteId': event['siteId'],
             'memberId': 0,
             'infectedTime': event['infectedTime'],
-            'strength' : event['strength'],
-            'myStrength' : event['strength'],
+            'strength': event['strength'],
+            'myStrength': event['strength'],
         }
         self.infectedFootprints = []
         self.check(infected)
@@ -151,6 +167,20 @@ class FirestoreDAO:
 
                 if footprint not in self.infectedFootprints:
                     self.infectedFootprints.append(footprint)
+                    # - pubsub
+                    Event = {
+                        "eventId": self.event["eventId"],
+                        "companyName": self.__db.document(f"companies/{infected['companyId']}").get().to_dict()["name"],
+                        "siteId": footprint["siteId"],
+                        "memberId": footprint["memberId"],
+                        "infectedTime": self.event["infectedTime"],
+                        "strength": self.event["strength"],
+                        "id": footprint["id"],
+                        "footprintTimestamp": footprint["timestamp"]
+                    }
+                    publishThread = threading.Thread(target=publish_messages, args=({'event' : Event},))
+                    publishThread.start()
+
                 infected['myStrength'] = infected['strength'] - 1
                 if infected['myStrength'] == 0:
                     infected['strength'] -= 1
