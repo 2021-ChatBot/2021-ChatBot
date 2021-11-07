@@ -53,7 +53,7 @@ def setMyFootprint():
     footprintEvent = json.loads(request.get_data())
     siteIdRegex = re.compile(r'\d\d\d\d \d\d\d\d \d\d\d\d \d\d\d')
     try:
-        siteId = siteIdRegex.findall(footprintEvent['siteInfo'])[0]
+        siteId = siteIdRegex.findall(footprintEvent['siteData'])[0]
         memberId = footprintEvent['memberId']
         importTime = int(time.time() + 28800)
     except:
@@ -250,8 +250,8 @@ def newSite():
 # ----------------------------註冊綁定------------------------------------
 @app.route("/postMemberFlow", methods=['POST'])
 def postMemberFlow():
-    memberInfo = request.get_json(force=True)
-    member = firestoreDAO.setMember(memberInfo)
+    memberData = request.get_json(force=True)
+    member = firestoreDAO.setMember(memberData)
     if "setMember" in member.keys():
         # - pubsub
         member["companyName"] = firestoreDAO.getCompanies({'companyId': config.companyId})[0]['name']
