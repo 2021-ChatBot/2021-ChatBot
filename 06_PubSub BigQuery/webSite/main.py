@@ -9,7 +9,7 @@ import threading
 import config
 from lineAPI import PushMessage
 from firestoreDAO import FirestoreDAO
-from publish import edgePub
+from publish import publish_messages
 from copy import deepcopy
 
 firestoreDAO = FirestoreDAO()
@@ -19,32 +19,36 @@ app.secret_key = os.urandom(24)
 
 
 # ----------------------個人資料-----------------------------------------
-@app.route("/myData/<memberId>", methods = ['GET', 'POST'])
+@app.route("/myData/<memberId>", methods=['GET', 'POST'])
 def myData(memberId):
     if request.method == 'GET':
-        member = firestoreDAO.getMembers({'id': memberId})[0]
+        members = firestoreDAO.getMembers({'id': memberId})
+        if members == []:
+            return "尚未註冊"
     if request.method == 'POST':
         member = request.form.to_dict()
         member['id'] = memberId
         firestoreDAO.updateMember(member)
-        member = firestoreDAO.getMembers({'id': memberId})[0]
-    return render_template('myData.html', member = member, title = "我的個資")
+        members = firestoreDAO.getMembers({'id': memberId})
+
+    return render_template('myData.html', member=members[0], title="我的個資")
 
 
-@app.route("/myForm/<memberId>", methods = ['GET'])
+# ----------------------修改個資-----------------------------------------
+@app.route("/myForm/<memberId>", methods=['GET'])
 def myForm(memberId):
     member = firestoreDAO.getMembers({'id': memberId})[0]
-    return render_template('myForm.html', member = member, title = "修改個資")
+    return render_template('myForm.html', member=member, title="修改個資")
 
 
 # ----------------------掃碼---------------------------------------------
-@app.route("/newFootprint/<memberId>", methods = ['GET'])
+@app.route("/newFootprint/<memberId>", methods=['GET'])
 def newFootprint(memberId):
-    return render_template('newFootprint.html', memberId = memberId, title = "實聯掃碼")
+    return render_template('newFootprint.html', memberId=memberId, title="實聯掃碼")
 
 
 # ----------------------寫入掃碼足跡紀錄-----------------------------------
-@app.route("/newFootprint", methods = ['POST'])
+@app.route("/newFootprint", methods=['POST'])
 def setMyFootprint():
     footprintEvent = json.loads(request.get_data())
     siteIdRegex = re.compile(r'\d\d\d\d \d\d\d\d \d\d\d\d \d\d\d')
@@ -65,7 +69,7 @@ def setMyFootprint():
                            f"商店: {sites[0]['name']}\n"
                            f"時間: {str(datetime.utcfromtimestamp(importTime).strftime('%Y-%m-%d %H:%M:%S'))}"
             }
-            notificationThread = threading.Thread(target = line.pushMessage, args = (message,))
+            notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
             notificationThread.start()
 
             # - firestore
@@ -77,12 +81,10 @@ def setMyFootprint():
             }
 
             firestoreDAO.setMyFootprint(footprint)
+            footprint['companyName'] = company['name']
 
-            footprint['footprintId'] = footprint['id']
-            del footprint['id']
-            del footprint['timestamp']
             # - pubsub
-            publishThread = threading.Thread(target=edgePub, args=( {'footprint': footprint} ,))
+            publishThread = threading.Thread(target=publish_messages, args=({'footprint': footprint},))
             publishThread.start()
 
             return jsonify(sites[0]['name'] + '  到店掃碼成功')
@@ -91,7 +93,7 @@ def setMyFootprint():
 
 
 # ----------------------------User掃碼足跡紀錄-----------------------------
-@app.route("/myFootprints/<memberId>", methods = ['GET'])
+@app.route("/myFootprints/<memberId>", methods=['GET'])
 def getMyFootprint(memberId):
     myFootprints = []
     for footprint in firestoreDAO.getMyFootprints({'memberId': memberId}):
@@ -102,35 +104,45 @@ def getMyFootprint(memberId):
                 'timestamp': str(datetime.utcfromtimestamp(footprint['timestamp']).strftime('%Y-%m-%d %H:%M:%S'))
             }
         )
-    return render_template('myFootprints.html', myFootprints = myFootprints, title = "足跡列表")
+    return render_template('myFootprints.html', myFootprints=myFootprints, title="足跡列表")
 
 
 # ----------------------------data studio-----------------------------
-@app.route("/report/<memberId>", methods = ['GET'])
+@app.route("/report/<memberId>", methods=['GET'])
 def report(memberId):
-    return render_template('dataStudio.html')
+    member = firestoreDAO.getMembers({'id': memberId})[0]
+    if member != []:
+        if member['role'] == "customer":
+            myreport = config.reportForCustomer
+        elif member['role'] == "manager":
+            myreport = config.reportForManager
+    else:
+        myreport = None
+    return render_template('dataStudio.html', report=myreport)
 
 
 # ----------------------------疫情調查設定-----------------------------
-@app.route("/checkFootprints/<memberId>", methods = ['GET'])
+@app.route("/checkFootprints/<memberId>", methods=['GET'])
 def checkFootprints(memberId):
     sitesOfCompany = {}
     companies = firestoreDAO.getCompanies()
     for company in companies:
         for site in firestoreDAO.getSites({'companyId': company['id']}):
             sitesOfCompany[f"{company['id']}-{site['id']}"] = f"{company['name']} {site['name']}"
-    return render_template('checkFootprints.html', sitesOfCompany = sitesOfCompany, title = "疫情調查")
+    return render_template('checkFootprints.html', sitesOfCompany=sitesOfCompany, title="疫情調查")
 
 
 # ----------------------------疫情調查結果-----------------------------
-@app.route("/infectedFootprints", methods = ['POST'])
+@app.route("/infectedFootprints", methods=['POST'])
 def infectedFootprints():
     event = request.form.to_dict()
     event['companyId'], event['siteId'] = event['siteOfCompany'].split('-')
+    del event['siteOfCompany']
     event['strength'] = int(event['strength'])
     event['infectedTime'] = time.mktime(datetime.strptime(request.values['infectedTime'], "%Y-%m-%dT%H:%M:%S").timetuple())
+    event['eventId'] = firestoreDAO.setEvent(event)
     event['infectedFootprints'] = firestoreDAO.checkFootprints(event)
-    event['eventId'] = firestoreDAO.setEvent(deepcopy(event))
+    firestoreDAO.setEvent(deepcopy(event))
 
     # line push message------------------------------------------------------
     infectedText = {}
@@ -143,7 +155,7 @@ def infectedFootprints():
         if footprint['memberName'] not in infectedText.keys():
             lineId = firestoreDAO.getMembers({'id': footprint['memberId']})[0]["lineId"]
             infectedText[footprint['memberName']] = {"content": "", "lineId": lineId}
-        infectedText[ footprint['memberName'] ]["content"] += f"\n\n感染地點: {footprint['siteName']}\n感染時間: {footprint['infectedTime']}"
+        infectedText[footprint['memberName']]["content"] += f"\n\n感染地點: {footprint['siteName']}\n感染時間: {footprint['infectedTime']}"
 
     for memberName in infectedText.keys():
         message = {
@@ -152,30 +164,25 @@ def infectedFootprints():
             "content": f"{memberName}，您已遭感染，請盡速就醫！" + infectedText[memberName]['content']
         }
 
-        notificationThread = threading.Thread(target = line.pushMessage, args = (message,))
+        notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
         notificationThread.start()
     # -----------------------------------------------------------------------
     result = {
-        'eventId'     : event['eventId'],
-        'strength'    : str(request.values['strength']),
+        'eventId': event['eventId'],
+        'strength': str(request.values['strength']),
         "infectedTime": str(request.values['infectedTime']).replace("T", " "),
-        "amount"      : len(set([ member['memberId'] for member in event['infectedFootprints'] ])),
-        "siteName"    : firestoreDAO.getSites({'companyId': event['companyId'], 'id': event['siteId']})[0]["name"],
-        "footprints"  : sorted(event['infectedFootprints'], key = lambda i: (i['memberName'], i['timestamp']))
+        "amount": len(set([member['memberId'] for member in event['infectedFootprints']])),
+        "siteName": firestoreDAO.getSites({'companyId': event['companyId'], 'id': event['siteId']})[0]["name"],
+        "footprints": sorted(event['infectedFootprints'], key=lambda i: (i['memberName'], i['timestamp']))
     }
 
-    # - pubsub
-    publishThread = threading.Thread(target=edgePub, args=({'event': event},))
-    publishThread.start()
-
-
-    return render_template('infectedFootprints.html', result = result, title = "疫情調查")
+    return render_template('infectedFootprints.html', result=result, title="疫情調查")
 
 
 # ----------------------------我的企業-----------------------------
-@app.route("/myCompany/<memberId>", methods = ['GET'])
-@app.route("/myCompany", methods = ['GET'])
-def myCompany(memberId = None):
+@app.route("/myCompany/<memberId>", methods=['GET'])
+@app.route("/myCompany", methods=['GET'])
+def myCompany(memberId=None):
     companies = firestoreDAO.getCompanies()
     sites = firestoreDAO.getSites({'companyId': config.companyId})
     members = firestoreDAO.getMembers({'companyId': config.companyId})
@@ -185,16 +192,16 @@ def myCompany(memberId = None):
         else:
             member['role'] = "管理者"
     result = {
-        'sites'       : sites,
-        'members'     : members,
-        'companies'   : companies,
-        'myCompanyId' : config.companyId
+        'sites': sites,
+        'members': members,
+        'companies': companies,
+        'myCompanyId': config.companyId
     }
-    return render_template('myCompany.html', result = result, title = '我的企業')
+    return render_template('myCompany.html', result=result, title='我的企業')
 
 
 # ----------------------------------------------------------------
-@app.route("/getCompany", methods = ['POST'])
+@app.route("/getCompany", methods=['POST'])
 def getCompany():
     companyData = {}
     companyId = request.get_json()["companyId"]
@@ -209,47 +216,51 @@ def getCompany():
 
 
 # ----------------------------增修商店------------------------------------
-@app.route("/mySite/<companyId>", methods = ['GET'])
-@app.route("/mySite/<companyId>/<siteId>", methods = ['GET'])
-def mySite(companyId, siteId = None):
+@app.route("/mySite/<companyId>", methods=['GET'])
+@app.route("/mySite/<companyId>/<siteId>", methods=['GET'])
+def mySite(companyId, siteId=None):
     company = firestoreDAO.getCompanies({'companyId': companyId})[0]
     site = {}
     if siteId != None:
         site = firestoreDAO.getSites({'companyId': companyId, 'id': siteId})[0]
     result = {
-        'company' : company,
-        'site'    : site
+        'company': company,
+        'site': site
     }
-    return render_template('mySite.html', result = result, title = '增修商店')
+    return render_template('mySite.html', result=result, title='增修商店')
 
 
 # ----------------------------增修商店------------------------------------
-@app.route("/mySite", methods = ['POST'])
+@app.route("/mySite", methods=['POST'])
 def newSite():
     site = request.form.to_dict()
     sites = firestoreDAO.getSites(site)
-    firestoreDAO.setSite(site)
 
     # inert newSite
     if sites == []:
         # - pubsub
-        publishThread = threading.Thread(target=edgePub, args=({'footprint': {'siteId': site['id'] }} ,))
+        site['companyName'] = firestoreDAO.getCompanies({'companyId': site['companyId']})[0]['name']
+        publishThread = threading.Thread(target=publish_messages, args=({'site': site},))
         publishThread.start()
+    firestoreDAO.setSite(site)
 
     return redirect(url_for('myCompany'))
 
+
 # ----------------------------註冊綁定------------------------------------
-@app.route("/postMemberFlow", methods = ['POST'])
+@app.route("/postMemberFlow", methods=['POST'])
 def postMemberFlow():
     memberInfo = request.get_json(force=True)
-    member = firestoreDAO.createMember(memberInfo)
-    if len(member.keys()) == 3:
+    member = firestoreDAO.setMember(memberInfo)
+    if "setMember" in member.keys():
         # - pubsub
-        publishThread = threading.Thread(target=edgePub, args=( {'footprint': {'memberId': member['id']} } ,))
+        member["companyName"] = firestoreDAO.getCompanies({'companyId': config.companyId})[0]['name']
+        publishThread = threading.Thread(target=publish_messages, args=({"member" : member},))
         publishThread.start()
 
     return jsonify(member)
 
+
 port = int(os.environ.get('PORT', 8080))
 if __name__ == '__main__':
-    app.run(threaded = True, host = '127.0.0.1', port = port)
+    app.run(threaded=True, host='127.0.0.1', port=port)
