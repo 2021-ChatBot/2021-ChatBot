@@ -54,13 +54,13 @@
   }
 
   function postFootprint(siteInfo) {
-    var footprintData = {
+    var footprint = {
       'siteInfo': siteInfo,
       'memberId': '{{memberId}}'
     };
     $.ajax({
       url: '/newFootprint',
-      data: JSON.stringify(footprintData),
+      data: JSON.stringify(footprint),
       type: 'POST',
       dataType: "json",
       success: function (response) {
