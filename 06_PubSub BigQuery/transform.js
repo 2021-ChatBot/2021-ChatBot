@@ -31,15 +31,15 @@ function transform(inJson) {
             return JSON.stringify(footprint);
       }
 
-      else if(messages.hasOwnProperty("event")){
+      else if(messages.hasOwnProperty("infected")){
             var infected = {
-                  "eventId" : messages.event.eventId,
-                  "companyName" : messages.event.companyName,
-                  "strength" : messages.event.strength,
-                  "eventTimestamp" : messages.event.infectedTime,
-                  "infectedFootprintId" : messages.event.id,
-                  "infectedSiteId" : messages.event.siteId,
-                  "infectedMemberId" : messages.event.memberId
+                  "eventId" : messages.infected.eventId,
+                  "companyName" : messages.infected.companyName,
+                  "strength" : messages.infected.strength,
+                  "eventTimestamp" : messages.infected.eventTimestamp,
+                  "infectedFootprintId" : messages.infected.footprintId,
+                  "infectedSiteId" : messages.infected.siteId,
+                  "infectedMemberId" : messages.infected.memberId
             }
             return JSON.stringify(infected);
       }
