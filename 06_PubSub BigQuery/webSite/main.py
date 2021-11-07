@@ -18,6 +18,19 @@ app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
 
+# ----------------------------註冊綁定------------------------------------
+@app.route("/memberRegister", methods=['POST'])
+def postMemberFlow():
+    memberData = request.get_json(force=True)
+    member = firestoreDAO.setMember(memberData)
+    if "setMember" in member.keys():
+        # - pubsub
+        member["companyName"] = firestoreDAO.getCompanies({'companyId': config.companyId})[0]['name']
+        publishThread = threading.Thread(target=publish_messages, args=({"member" : member},))
+        publishThread.start()
+    return jsonify(member)
+
+
 # ----------------------個人資料-----------------------------------------
 @app.route("/myData/<memberId>", methods=['GET', 'POST'])
 def myData(memberId):
@@ -245,20 +258,6 @@ def newSite():
     firestoreDAO.setSite(site)
 
     return redirect(url_for('myCompany'))
-
-
-# ----------------------------註冊綁定------------------------------------
-@app.route("/postMemberFlow", methods=['POST'])
-def postMemberFlow():
-    memberData = request.get_json(force=True)
-    member = firestoreDAO.setMember(memberData)
-    if "setMember" in member.keys():
-        # - pubsub
-        member["companyName"] = firestoreDAO.getCompanies({'companyId': config.companyId})[0]['name']
-        publishThread = threading.Thread(target=publish_messages, args=({"member" : member},))
-        publishThread.start()
-
-    return jsonify(member)
 
 
 port = int(os.environ.get('PORT', 8080))
