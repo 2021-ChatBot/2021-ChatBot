@@ -173,12 +173,12 @@ class FirestoreDAO:
                         "companyName": self.__db.document(f"companies/{infected['companyId']}").get().to_dict()["name"],
                         "siteId": footprint["siteId"],
                         "memberId": footprint["memberId"],
-                        "infectedTime": self.event["infectedTime"],
+                        "eventTimestamp": self.event["infectedTime"],
                         "strength": self.event["strength"],
-                        "id": footprint["id"],
+                        "footprintId": footprint["id"],
                         "footprintTimestamp": footprint["timestamp"]
                     }
-                    publishThread = threading.Thread(target=publish_messages, args=({'event' : event},))
+                    publishThread = threading.Thread(target=publish_messages, args=({'infected' : event},))
                     publishThread.start()
 
                 infected['myStrength'] = infected['strength'] - 1
