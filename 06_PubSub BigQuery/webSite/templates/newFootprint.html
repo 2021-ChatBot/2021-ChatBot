@@ -53,9 +53,9 @@
     }
   }
 
-  function postFootprint(siteInfo) {
+  function postFootprint(siteData) {
     var footprint = {
-      'siteInfo': siteInfo,
+      'siteData': siteData,
       'memberId': '{{memberId}}'
     };
     $.ajax({
@@ -105,8 +105,8 @@
       qrResult.hidden = false;
       // canvasElement.hidden = true;
       btnScanQR.hidden = false;
-      var siteInfo = res;
-      console.log(siteInfo);
+      var siteData = res;
+      console.log(siteData);
       postFootprint(res);
       scanning = true;
     }
