@@ -248,7 +248,7 @@ def mySite(companyId, siteId=None):
 def newSite():
     site = request.form.to_dict()
     sites = firestoreDAO.getSites(site)
-    firestoreDAO.setSite(site)
+    
     
     # inert newSite
     if sites == []:
@@ -256,7 +256,8 @@ def newSite():
         site['companyName'] = firestoreDAO.getCompanies({'companyId': site['companyId']})[0]['name']
         publishThread = threading.Thread(target=publish_messages, args=({'site': site},))
         publishThread.start()
-        
+    firestoreDAO.setSite(site)
+    
     return redirect(url_for('myCompany'))
 
 
