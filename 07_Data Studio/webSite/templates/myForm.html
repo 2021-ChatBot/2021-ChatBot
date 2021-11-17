@@ -1,0 +1,42 @@
+{% extends "mobileLayout.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block bodyContent %}
+
+{% if member['role'] == 'customer' %}
+{% set customer_checked = 'checked' %}
+{% set manager_checked = '' %}
+{% else %}
+{% set customer_checked = '' %}
+{% set manager_checked = 'checked' %}
+{% endif %}
+
+<h1 class="title">{{title}}</h1>
+<form action="/myData/{{member['id']}}" method="POST">
+  <label class="label">
+    <div class="field form-inline">
+      姓名：<input type="text" name="name" class="label" value="{{member['name']}}" required />
+    </div>
+    <div class="field">
+      Id：{{member['id']}}
+    </div>
+    <div class="field">
+      LineId：{{member['lineId']}}
+    </div>
+    <div class="field form-inline">
+      Email：<input type="text" class="label" name="email" value="{{member['email']}}" required />
+    </div>
+
+    <div class="field">
+      <label for="角色" class="label">角色：
+        <input type="radio" name="role" value="customer" {{ customer_checked }}>顧客
+        <input type="radio" name="role" value="manager" {{ manager_checked }}>管理者
+      </label>
+    </div>
+    <div class="field form-inline">
+      <button class="button is-link">儲存</button>
+      <a class="button is-link" href="/myData/{{member['id']}}" style="margin-left: 5%">取消</a>
+    </div>
+  </label>
+</form>
+
+{% endblock %}

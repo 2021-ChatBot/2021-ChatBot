@@ -1,0 +1,116 @@
+{% extends "mobileLayout.html" %}
+
+{% block title %}{{title}}{% endblock %}
+{% block headContent %}
+{% endblock %}
+
+{% block bodyContent %}
+
+<link rel="stylesheet" href="../static/scanQrcode.css" />
+<script src="https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div id="container">
+  <h1>{{title}}</h1>
+  <a id="btn-scan-qr">
+    <img src="">
+  </a>
+
+  <canvas id="qr-canvas"></canvas>
+
+  <div id="qr-result" hidden="">
+
+  </div>
+</div>
+
+
+
+<script>
+  const video = document.createElement("video");
+  const canvasElement = document.getElementById("qr-canvas");
+  const canvas = canvasElement.getContext("2d");
+
+  const qrResult = document.getElementById("qr-result");
+  const outputData = document.getElementById("outputData");
+  const btnScanQR = document.getElementById("btn-scan-qr");
+
+  let scanning = true;
+
+  function tick() {
+
+    canvasElement.height = video.videoHeight;
+    canvasElement.width = video.videoWidth;
+    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+
+    scanning && requestAnimationFrame(tick);
+
+  }
+
+  function scan() {
+    try {
+      qrcode.decode();
+    } catch (e) {
+      setTimeout(scan, 300);
+    }
+  }
+
+  function postFootprint(siteData) {
+    var footprint = {
+      'siteData': siteData,
+      'memberId': '{{memberId}}'
+    };
+    $.ajax({
+      url: '/newFootprint',
+      data: JSON.stringify(footprint),
+      type: 'POST',
+      dataType: "json",
+      success: function (response) {
+        alert(response);
+        setCameraEnv();
+      },
+      error: function (error) {
+        console.log(error);
+      }
+    });
+  }
+
+  function setCameraEnv() {
+    a = false;
+    navigator.mediaDevices
+      .getUserMedia({ video: { facingMode: "environment" } })
+      .then(function (stream) {
+        scanning = true;
+        qrResult.hidden = true;
+        btnScanQR.hidden = true;
+        canvasElement.hidden = false;
+        video.setAttribute("playsinline", true);
+        video.srcObject = stream;
+        video.play();
+        tick()
+        scan();
+      });
+  }
+
+  setCameraEnv();
+
+
+  qrcode.callback = res => {
+    if (res) {
+      console.log(res);
+      scanning = false;
+
+      video.srcObject.getTracks().forEach(track => {
+        track.stop();
+      });
+
+      qrResult.hidden = false;
+      // canvasElement.hidden = true;
+      btnScanQR.hidden = false;
+      var siteData = res;
+      console.log(siteData);
+      postFootprint(res);
+      scanning = true;
+    }
+  };
+
+</script>
+{% endblock %}
