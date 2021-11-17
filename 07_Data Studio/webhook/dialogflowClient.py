@@ -2,9 +2,8 @@ import os
 import json
 from google.cloud import dialogflow
 from google.protobuf.json_format import MessageToJson
-from config import serviceAccountKey,  projectId, languageCode
+from config import  projectId, languageCode
 
-os.environ ['GOOGLE_APPLICATION_CREDENTIALS'] = serviceAccountKey
 
 def detectIntent(sessionId, text, event):
 
