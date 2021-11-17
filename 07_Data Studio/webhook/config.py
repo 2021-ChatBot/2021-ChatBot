@@ -14,4 +14,3 @@ originmenu_json_path = "richmenu/origin.json"
 #（2）Dialogflow 
 projectId = "[your project id]"
 languageCode = "zh-TW"
-serviceAccountKey = "[your dialogflowKey]"
