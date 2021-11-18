@@ -1,0 +1,6 @@
+Flask
+line-bot-sdk
+firebase_admin
+google-auth
+google-cloud-pubsub
+google-cloud-secret-manager==2.1.0
