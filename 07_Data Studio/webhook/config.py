@@ -1,7 +1,6 @@
 import os
 
 #（0）Company
-companyId = "[your company id]"
 WebUrl = "[your app engine url]"
 
 #（1）Line Channel
