@@ -50,17 +50,15 @@ def handle_message(event):
 def handle_queryResult(queryResult, lineId):
     if 'action' in queryResult and queryResult['action'] == "registerAction":
         print(queryResult)
-        if queryResult['parameters']['person']['name'] and queryResult['parameters']['email']:
+        if queryResult['parameters']['person']['name']:
             lineBotApi.push_message(lineId, registerHandleMessage)
             memberName = queryResult['parameters']['person']['name']
-            email = queryResult['parameters']['email']
-            member = postMemberFlow(lineId, memberName, email)
+            member = postMemberFlow(lineId, memberName)
             if member:
                 message = TextSendMessage(
                     text=registerSuccessText + 'memberId=' + member['id'] + '\n' \
                          + 'name=' + member['name'] + '\n' \
-                         + 'lineId=' + member['lineId'] + '\n' \
-                         + 'email=' + member['email']
+                         + 'lineId=' + member['lineId']
                 )
                 lineBotApi.push_message(lineId, message)
             richMenu_handler.create_richMenu(lineId,linebotapi= lineBotApi, memberId=member["id"], timeflag=False)
@@ -71,12 +69,11 @@ def handle_queryResult(queryResult, lineId):
             lineBotApi.push_message(lineId, message)
 
 
-def postMemberFlow(lineId, name, email):
+def postMemberFlow(lineId, name):
     # firestore 註冊
     memberData = {
         'name'       : name,
         'lineId'     : lineId,
-        'email'      : email
     }
     print(memberData)
 
