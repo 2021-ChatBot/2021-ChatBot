@@ -70,7 +70,6 @@ class FirestoreDAO:
             "name": myMember['name'],
             "lineId": myMember['lineId'],
             "id": memberId,
-            "email" : myMember['email'],
             "setMember": True
         }
 
