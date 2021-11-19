@@ -49,7 +49,6 @@ def handle_message(event):
 
 def handle_queryResult(queryResult, lineId):
     if 'action' in queryResult and queryResult['action'] == "registerAction":
-        print(queryResult)
         if queryResult['parameters']['person']['name']:
             lineBotApi.push_message(lineId, registerHandleMessage)
             memberName = queryResult['parameters']['person']['name']
@@ -79,9 +78,6 @@ def postMemberFlow(lineId, name):
 
     response = requests.post(WebUrl + '/memberRegister', json = memberData)
     member = response.content
-
-    print(type(member))
-    print(member)
     
     memberToDict = json.loads(member)
     return memberToDict
