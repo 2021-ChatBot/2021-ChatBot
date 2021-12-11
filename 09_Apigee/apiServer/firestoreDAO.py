@@ -117,16 +117,13 @@ class FirestoreDAO:
                 footprints = [doc.to_dict() for doc in docs]
             elif infected['memberId'] != 0:
                 # 合併同一使用者在不同企業的足跡
-                print(infected['memberId'])
                 member = self.__db.document(f"members/{infected['memberId']}").get().to_dict()
                 members = []
-                print(member)
                 for doc in self.__db.collection('members').stream():
                     print(doc.to_dict())
                     if doc.to_dict() and member:
                         if doc.to_dict()['lineId'] == member['lineId']:
                             members.append(doc.to_dict())
-                print(members)
                 footprints = []
                 for sameMember in members:
                     footprints_ref = self.__db.collection(f"members/{sameMember['id']}/footprints")
