@@ -16,19 +16,18 @@ app.secret_key = os.urandom(24)
 @app.route("/member", methods=['POST'])
 def member():
     # ----------------------註冊綁定--------------------------------
-    if request.method == 'POST':
-        memberData = request.get_json(force=True)
-        # memberData -> {'lineId': lineId, 'companyId' : companyId}
-        companyId = memberData['companyId']
-        del memberData['companyId']
-        member = firestoreDAO.setMember(memberData)
+    memberData = request.get_json(force=True)
+    # memberData -> {'lineId': lineId, 'companyId' : companyId}
+    companyId = memberData['companyId']
+    del memberData['companyId']
+    member = firestoreDAO.setMember(memberData)
 
-        # - pubsub
-        member["companyName"] = firestoreDAO.getCompany(companyId)['name']
-        publishThread = threading.Thread(target=publish_messages, args=({"member": member},))
-        publishThread.start()
+    # - pubsub
+    member["companyName"] = firestoreDAO.getCompany(companyId)['name']
+    publishThread = threading.Thread(target=publish_messages, args=({"member": member},))
+    publishThread.start()
 
-        return jsonify({'response': member['id']})
+    return jsonify({'response': member['id']})
 
 # ----------------------footprint-----------------------------------------
 @app.route("/footprint/<companyId>/<memberId>", methods=['GET'])
@@ -55,9 +54,8 @@ def footprint(companyId=None, memberId=None):
 # ----------------------company-----------------------------------------
 @app.route("/company/<companyId>", methods=['GET'])
 def company(companyId=None):
-    if request.method == 'GET':
-        myCompany = firestoreDAO.getCompany(companyId)
-        return jsonify({'response': myCompany})
+    myCompany = firestoreDAO.getCompany(companyId)
+    return jsonify({'response': myCompany})
 
 
 # ----------------------site-----------------------------------------
