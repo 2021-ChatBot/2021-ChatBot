@@ -25,9 +25,9 @@ x-google-management:
       # Define the limit or the read-requests metric.
       - name: "read-limit"
         metric: "read-requests"
-        unit: "1/min/{project}"
+        unit: "1/min/{project}" # 設定每 n 分鐘
         values:
-          STANDARD: 3
+          STANDARD: 3 # 上限可使用 n 次數
 paths:
   /member:
     post:
@@ -177,7 +177,7 @@ paths:
         - api_key: []
       x-google-quota:
         metricCosts:
-          "read-requests": 1
+          "read-requests": 1 # 請求 n 次消耗的額度
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: {這裡要放 App Engine Domain Url}
