@@ -118,21 +118,9 @@ class FirestoreDAO:
                 docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
                 footprints = [doc.to_dict() for doc in docs]
             elif infected['memberId'] != 0:
-                # 合併同一使用者在不同企業的足跡
-                member = self.__db.document(f"members/{infected['memberId']}").get().to_dict()
-                members = []
-                for doc in self.__db.collection('members').stream():
-                    print(doc.to_dict())
-                    if doc.to_dict() and member:
-                        if doc.to_dict()['lineId'] == member['lineId']:
-                            members.append(doc.to_dict())
-                footprints = []
-                for sameMember in members:
-                    footprints_ref = self.__db.collection(f"members/{sameMember['id']}/footprints")
-                    docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
-                    footprints.extend([doc.to_dict() for doc in docs])
-                footprints = sorted(footprints, key=lambda i: i['timestamp'])
-                footprints = footprints[:infected['myStrength'] + 1]
+                footprints_ref = self.__db.collection(f"members/{infected['memberId']}/footprints")
+                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
+                footprints = [doc._data for doc in docs] 
 
             for footprint in footprints:
                 infected['infectedTime'] = footprint['timestamp']
