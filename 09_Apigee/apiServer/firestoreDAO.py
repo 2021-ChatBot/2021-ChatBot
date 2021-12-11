@@ -35,10 +35,12 @@ class FirestoreDAO:
     # --------Member--------------
     def setMember(self, myMember) -> dict:
         # myMember -> {'lineId': lineId, 'companyId' : companyId}
+        companyId = myMember['companyId']
+        del myMember['companyId']
         memberId = self.__db.collection("members").add(myMember)[1].id
         self.__db.document(f"members/{memberId}").update({'id': memberId})
         # create memberId in company
-        self.__db.document(f"companies/{myMember['companyId']}/members/{memberId}").set(None)
+        self.__db.document(f"companies/{companyId}/members/{memberId}").set(None)
         return {
             "lineId": myMember['lineId'],
             "id": memberId
