@@ -19,7 +19,6 @@ def member():
     memberData = request.get_json(force=True)
     # memberData -> {'lineId': lineId, 'companyId' : companyId}
     companyId = memberData['companyId']
-    del memberData['companyId']
     member = firestoreDAO.setMember(memberData)
 
     # - pubsub
