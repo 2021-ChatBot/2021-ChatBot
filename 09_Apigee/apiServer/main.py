@@ -19,9 +19,7 @@ def member():
     if request.method == 'POST':
         memberData = request.get_json(force=True)
         # memberData -> {'lineId': lineId, 'companyId' : companyId}
-        print(memberData)
         member = firestoreDAO.setMember(memberData)
-        print(member)
 
         # - pubsub
         member["companyName"] = firestoreDAO.getCompany(memberData['companyId'])['name']
