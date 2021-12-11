@@ -1,0 +1,5 @@
+Flask
+requests
+firebase_admin
+google-cloud-pubsub
+google-auth
