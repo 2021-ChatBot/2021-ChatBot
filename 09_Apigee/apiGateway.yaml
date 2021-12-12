@@ -1,4 +1,3 @@
-# openapi2-appengine.yaml
 swagger: '2.0'
 info:
   title: API Gateway
@@ -22,8 +21,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -48,8 +47,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -64,8 +63,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -86,8 +85,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -112,8 +111,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -133,8 +132,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -149,8 +148,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
@@ -166,8 +165,8 @@ paths:
         - api_key: []
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
-        address: https://api-dot-secomv5.uc.r.appspot.com
-        jwt_audience: 570511952637-bq1cl47ed0vj77so65qt88c2gd2ho2s0.apps.googleusercontent.com
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
 
       responses:
         '200':
