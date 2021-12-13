@@ -1,0 +1,227 @@
+swagger: '2.0'
+info:
+  title: API Gateway 3
+  description: Chatbot api gateway with an App Engine backend
+  version: 1.0.0
+schemes:
+  - https
+securityDefinitions:
+  api_key:
+    type: apiKey
+    in: header
+    name: X-API-KEY
+produces:
+  - application/json
+paths:
+  /member:
+    post:
+      summary: Return a dictionary of memberData.
+      operationId: post_setmember
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /footprint/{companyId}/{memberId}:
+    get:
+      summary: Return a list of footprintDatas.
+      operationId: get_member
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          required: true
+        - in: path
+          name: memberId
+          type: string
+          required: true
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /footprint:
+    post:
+      summary: Return a dictionary of footprintData
+      operationId: post_footprint
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /company/{companyId}:
+    get:
+      summary: Return a dictionary of companyData
+      operationId: get_company
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          required: true
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /site/{companyId}/{siteId}:
+    get:
+      summary: Return a dictionary of siteData.
+      operationId: get_site
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          required: true
+        - in: path
+          name: siteId
+          type: string
+          required: true
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /site/{companyId}:
+    get:
+      summary: Return a list of siteDatas.
+      operationId: get_sites
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          required: true
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /site:
+    post:
+      summary: Return a dictionary of siteData.
+      operationId: post_site
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+
+  /event:
+    post:
+      summary: Return a dictionary of eventData
+      operationId: post_eventData
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+          
+  /infected/{companyId}/{siteId}/{memberId}/{infectedTime}/{strength}:
+    get:
+      summary: Return a list of infected footprints.
+      operationId: get_infected_footprints
+      parameters:
+        - in: path
+          name: companyId
+          type: string
+          required: true
+        - in: path
+          name: siteId
+          type: string
+          required: true
+        - in: path
+          name: memberId
+          type: string
+          required: true
+        - in: path
+          name: infectedTime
+          type: integer
+          required: true
+        - in: path
+          name: strength
+          type: integer
+          required: true
+      security:
+        - api_key: []
+      x-google-backend:
+        path_translation: APPEND_PATH_TO_ADDRESS
+        address: { APP ENGINE DOMAIN NAME }
+        jwt_audience: { IAP Client Id }
+
+      responses:
+        '200':
+          $ref: '#/responses/SuccessfulResponse'
+        '401':
+          $ref: '#/responses/UnauthorizedError'
+        
+responses:
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
+  SuccessfulResponse:
+    description: A successful response
+    schema:
+      type: string
