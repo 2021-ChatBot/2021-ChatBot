@@ -1,156 +1,105 @@
-import firebase_admin
-from firebase_admin import credentials, firestore, initialize_app
-from publish import publish_messages
-import threading
+import os
+from firebase_admin import firestore, initialize_app
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
+app.secret_key = os.urandom(24)
+
+initialize_app()
+db = firestore.client()
 
 
-class FirestoreDAO:
-    def __init__(self):
-        initialize_app()
-        self.__db = firestore.client()
+# --------Company--------------
+@app.route("/company/<companyId>", methods=['GET'])
+def getCompany(companyId):
+    company_ref = db.document(f"companies/{companyId}")
+    company = company_ref.get().to_dict()
+    return jsonify({'response': company})
 
-    # --------Company--------------
-    def getCompany(self, companyId) -> dict:
-        company_ref = self.__db.document(f"companies/{companyId}")
-        company = company_ref.get().to_dict()
-        return company
 
-    # --------Site--------------
-    def setSite(self, site):
-        site_ref = self.__db.document(f"companies/{site['companyId']}/sites/{site['id']}")
-        site_ref.set(site)
-        return site
+# --------Site--------------
+@app.route("/site", methods=['POST'])
+def setSite():
+    site = request.get_json(force=True)
+    # site -> {"companyId":companyId,"id":siteId,"name":siteName}
+    site_ref = db.document(f"companies/{site['companyId']}/sites/{site['id']}")
+    del site['companyId']
+    site_ref.set(site)
+    return jsonify({'response': site})
 
-    def getSites(self, site={}) -> list:
-        sites = []
-        if "id" in site:
-            doc = self.__db.document(f"companies/{site['companyId']}/sites/{site['id']}").get()
-            if doc.to_dict() != None:
-                sites.append(doc.to_dict())
-        else:
-            docs = self.__db.collection(f"companies/{site['companyId']}/sites").stream()
-            sites = list(doc.to_dict() for doc in docs)
-        return sites
 
-    # --------Member--------------
-    def setMember(self, myMember) -> dict:
-        # myMember -> {'lineId': lineId, 'companyId' : companyId}
-        companyId = myMember['companyId']
-        del myMember['companyId']
-        memberId = self.__db.collection("members").add(myMember)[1].id
-        self.__db.document(f"members/{memberId}").update({'id': memberId})
-        # create memberId in company
-        self.__db.document(f"companies/{companyId}/members/{memberId}").set(None)
-        return {
-            "lineId": myMember['lineId'],
-            "id": memberId
-        }
+@app.route("/site/<companyId>/<siteId>", methods=['GET'])
+@app.route("/site/<companyId>", methods=['GET'])
+def getSites(companyId, site):
+    sites = []
+    if "id" in site:
+        doc = db.document(f"companies/{companyId}/sites/{site['id']}").get()
+        if doc.to_dict() != None:
+            sites.append(doc.to_dict())
+    else:
+        docs = db.collection(f"companies/{companyId}/sites").stream()
+        sites = list(doc.to_dict() for doc in docs)
+    return jsonify({'response': sites})
 
-    def updateMember(self, member):
-        doc = self.__db.document(f"members/{member['id']}")
-        doc.update(member)
 
-    def getMembers(self, myMember={}) -> list:
-        members = []
-        if 'id' in myMember:
-            doc = self.__db.document(f"members/{myMember['id']}").get()
-            if doc.to_dict() != None:
-                members.append(doc.to_dict())
-        elif 'email' in myMember:
-            memberList = list(doc.to_dict() for doc in self.__db.collection('members').stream())
-            for member in memberList:
-                if member['email'] == myMember['email']:
-                    members.append(member)
-                    break
-        else:
-            memberIDs = list(doc.id for doc in self.__db.collection(f'companies/{myMember["companyId"]}/members').stream())
-            for doc in self.__db.collection('members').stream():
-                if doc.id in memberIDs:
-                    members.append(doc.to_dict())
-        return members
+# --------Member--------------
+@app.route("/member", methods=['POST'])
+def setMember():
+    member = request.get_json(force=True)
+    # member -> {'id' : memberId, 'companyId' : companyId}
+    # __db.collection("members").document(member['id']).update({'id': member['id']})
+    db.document(f"companies/{member['companyId']}/members/{member['id']}").set(None)
+    return jsonify({'response': member})
 
-    # --------Footprint--------------
-    def setMyFootprint(self, footprint):
-        footprint_ref = self.__db.collection(f"members/{footprint['memberId']}/footprints")
-        footprint['id'] = footprint_ref.add(footprint)[1].id
-        footprint_ref.document(footprint['id']).update(footprint)
-        site_ref = self.__db.document(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints/{footprint['id']}")
-        site_ref.set(footprint)
-        return footprint
 
-    def getMyFootprints(self, member) -> list:
-        docs = self.__db.collection(f"members/{member['id']}/footprints").order_by(u'timestamp').stream()
-        footprints = list(doc.to_dict() for doc in docs if member["companyId"] == doc.to_dict()["companyId"])
-        return footprints
+# --------Footprint--------------
+@app.route("/footprint", methods=['POST'])
+def setMyFootprint():
+    footprint = request.get_json(force=True)
+    # footprint -> {"companyId":companyId},"siteId":siteId,"memberId":memberId,"timestamp":timestamp}
+    footprint_ref = db.collection(f"companies/{footprint['companyId']}/members/{footprint['memberId']}/footprints")
+    footprint['id'] = footprint_ref.add(footprint)[1].id
+    footprint_ref.document(footprint['id']).update(footprint)
 
-    # --------Event--------------
-    def setEvent(self, event) -> str:
-        if 'eventId' not in event.keys():
-            eventId = self.__db.collection('events').add(None)[1].id
-        else:
-            infectedFootprints = event["infectedFootprints"]
-            eventId = event['eventId']
-            del event["infectedFootprints"]
-            self.__db.document(f'events/{eventId}').update(event)
-            for infectedFootprint in infectedFootprints:
-                self.__db.document(f"events/{eventId}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
-        return eventId
+    site_ref = db.document(f"companies/{footprint['companyId']}/sites/{footprint['siteId']}/footprints/{footprint['id']}")
+    site_ref.set(footprint)
+    return jsonify({'response': footprint})
 
-    # --------Check--------------
-    def checkFootprints(self, event):
-        self.event = event
-        infected = {
-            'companyId': event['companyId'],
-            'siteId': event['siteId'],
-            'memberId': 0,
-            'infectedTime': event['infectedTime'],
-            'strength': event['strength'],
-            'myStrength': event['strength'],
-        }
-        self.infectedFootprints = []
-        self.check(infected)
-        return self.infectedFootprints
 
-    def check(self, infected):
-        if infected['myStrength'] > 0:
-            if infected['siteId'] != 0:
-                footprints_ref = self.__db.collection(f"companies/{infected['companyId']}/sites/{infected['siteId']}/footprints")
-                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
-                footprints = [doc.to_dict() for doc in docs]
-            elif infected['memberId'] != 0:
-                footprints_ref = self.__db.collection(f"members/{infected['memberId']}/footprints")
-                docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", infected["infectedTime"]).limit(infected['myStrength']).get()
-                footprints = [doc._data for doc in docs] 
+@app.route("/footprint/<companyId>/<memberId>", methods=['GET'])
+def getMyFootprints(companyId, memberId):
+    docs = db.collection(f"companies/{companyId}/members/{memberId}/footprints").order_by(u'timestamp').stream()
+    footprints = list(doc._data for doc in docs)
+    return jsonify({'response': footprints})
 
-            for footprint in footprints:
-                infected['infectedTime'] = footprint['timestamp']
-                infected['myStrength'] -= 1
-                if infected['siteId'] != 0:
-                    infected['memberId'] = footprint['memberId']
-                    infected['siteId'] = 0
-                elif infected['memberId'] != 0:
-                    infected['companyId'] = footprint['companyId']
-                    infected['siteId'] = footprint['siteId']
-                    infected['memberId'] = 0
 
-                self.check(infected)
+# --------Event--------------
+@app.route("/event", methods=['POST'])
+def setEvent():
+    event = request.get_json(force=True)
+    # event -> {"companyId":companyId, "siteId" : siteId, "infectedTime" : infectedTime, "strength":strength,"infectedFootprints":infectedFootprints}
+    infectedFootprints = event["infectedFootprints"]
+    del event["infectedFootprints"]
+    event["eventId"] = db.collection('events').add(None)[1].id
+    db.collection('events').document(event["eventId"]).update(event)
+    for infectedFootprint in infectedFootprints:
+        db.document(f"events/{event['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
+    return jsonify({'response': event})
 
-                if footprint not in self.infectedFootprints:
-                    self.infectedFootprints.append(footprint)
-                    # - publish message
-                    infectedFootprint = {
-                        "eventId": self.event["eventId"],
-                        "companyName": self.__db.document(f"companies/{footprint['companyId']}").get().to_dict()["name"],
-                        "siteId": footprint["siteId"],
-                        "memberId": footprint["memberId"],
-                        "footprintId": footprint["id"],
-                        "strength": self.event["strength"],
-                        "eventTimestamp": self.event["infectedTime"],
-                        "footprintTimestamp": footprint["timestamp"]
-                    }
-                    publishThread = threading.Thread(target=publish_messages, args=({'infected': infectedFootprint},))
-                    publishThread.start()
 
-                infected['myStrength'] = infected['strength'] - 1
-                if infected['myStrength'] == 0:
-                    infected['strength'] -= 1
+# --------Check--------------
+@app.route("/infected/<companyId>/<siteId>/<memberId>/<infectedTime>/<strength>", methods=['GET'])
+def getInfectedFootprints(companyId, siteId, memberId, infectedTime, strength):
+    if siteId != 0:
+        footprints_ref = db.collection(f"companies/{companyId}/{siteId}/footprints")
+    elif memberId != 0:
+        footprints_ref = db.collection(f"companies/{companyId}/members/{memberId}/footprints")
+    docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", int(infectedTime)).limit(int(strength)).get()
+    footprints = [doc.to_dict() for doc in docs]
+    return jsonify({'response': footprints})
+
+
+port = int(os.environ.get('PORT', 8080))
+if __name__ == '__main__':
+    app.run(threaded=True, host='127.0.0.1', port=port)
