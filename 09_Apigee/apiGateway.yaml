@@ -176,8 +176,8 @@ paths:
           
   /infected/{companyId}/{siteId}/{memberId}/{infectedTime}/{strength}:
     get:
-      summary: Return a list of siteDatas.
-      operationId: get_sites
+      summary: Return a list of infected footprints.
+      operationId: get_infected_footprints
       parameters:
         - in: path
           name: companyId
@@ -193,11 +193,11 @@ paths:
           required: true
         - in: path
           name: infectedTime
-          type: string
+          type: integer
           required: true
         - in: path
           name: strength
-          type: string
+          type: integer
           required: true
       security:
         - api_key: []
