@@ -23,7 +23,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -49,7 +48,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -66,7 +64,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -88,7 +85,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -114,7 +110,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -136,7 +131,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -153,7 +147,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -170,7 +163,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -208,7 +200,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
