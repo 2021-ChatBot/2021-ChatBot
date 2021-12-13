@@ -23,7 +23,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -49,12 +48,12 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /footprint:
     post:
       summary: Return a dictionary of footprintData
@@ -65,7 +64,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -87,7 +85,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -113,12 +110,12 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /site/{companyId}:
     get:
       summary: Return a list of siteDatas.
@@ -134,12 +131,12 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /site:
     post:
       summary: Return a dictionary of siteData.
@@ -150,7 +147,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -167,7 +163,6 @@ paths:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
         jwt_audience: { IAP Client Id }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
