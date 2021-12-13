@@ -48,7 +48,6 @@ def getSites(companyId, siteId=None):
 def setMember():
     member = request.get_json(force=True)
     # member -> {'id' : memberId, 'companyId' : companyId}
-    # __db.collection("members").document(member['id']).update({'id': member['id']})
     db.document(f"companies/{member['companyId']}/members/{member['id']}").set(None)
     return jsonify({'response': member})
 
