@@ -15,7 +15,6 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -38,12 +37,12 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /footprint:
     post:
       summary: Return a dictionary of footprintData
@@ -51,7 +50,6 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -70,7 +68,6 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -93,12 +90,12 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /site/{companyId}:
     get:
       summary: Return a list of siteDatas.
@@ -111,12 +108,12 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
         '401':
           $ref: '#/responses/UnauthorizedError'
+          
   /site:
     post:
       summary: Return a dictionary of siteData.
@@ -124,7 +121,6 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
@@ -138,7 +134,6 @@ paths:
       x-google-backend:
         path_translation: APPEND_PATH_TO_ADDRESS
         address: { APP ENGINE DOMAIN NAME }
-
       responses:
         '200':
           $ref: '#/responses/SuccessfulResponse'
