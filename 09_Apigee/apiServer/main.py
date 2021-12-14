@@ -84,7 +84,7 @@ def setEvent():
     db.collection('events').document(event["eventId"]).update(event)
     for infectedFootprint in infectedFootprints:
         db.document(f"events/{event['eventId']}/infectedFootprints/{infectedFootprint['id']}").set(infectedFootprint)
-    return jsonify({'response': event})
+    return jsonify({'response': event['eventId']})
 
 
 # --------Check--------------
