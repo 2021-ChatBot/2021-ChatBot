@@ -29,18 +29,18 @@ def setSite():
     return jsonify({'response': site})
 
 
-@app.route("/site/<companyId>/<siteId>", methods=['GET'])
 @app.route("/site/<companyId>", methods=['GET'])
-def getSites(companyId, siteId=None):
-    sites = []
-    if siteId:
-        doc = db.document(f"companies/{companyId}/sites/{siteId}").get()
-        if doc.to_dict() != None:
-            sites.append(doc.to_dict())
-    else:
-        docs = db.collection(f"companies/{companyId}/sites").stream()
-        sites = list(doc.to_dict() for doc in docs)
+def getSites(companyId):
+    docs = db.collection(f"companies/{companyId}/sites").stream()
+    sites = list(doc.to_dict() for doc in docs)
     return jsonify({'response': sites})
+
+
+@app.route("/site/<companyId>/<siteId>", methods=['GET'])
+def getSite(companyId, siteId):
+    doc = db.document(f"companies/{companyId}/sites/{siteId}").get()
+    site = doc.to_dict()
+    return jsonify({'response': site})
 
 
 # --------Member--------------
