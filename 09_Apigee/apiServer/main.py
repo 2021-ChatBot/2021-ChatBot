@@ -43,15 +43,6 @@ def getSite(companyId, siteId):
     return jsonify({'response': site})
 
 
-# --------Member--------------
-@app.route("/member", methods=['POST'])
-def setMember():
-    member = request.get_json(force=True)
-    # member -> {'id' : memberId, 'companyId' : companyId}
-    db.document(f"companies/{member['companyId']}/members/{member['id']}").set(None)
-    return jsonify({'response': member})
-
-
 # --------Footprint--------------
 @app.route("/footprint", methods=['POST'])
 def setMyFootprint():
