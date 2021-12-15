@@ -91,7 +91,7 @@ def setEvent():
 @app.route("/infected/<companyId>/<siteId>/<memberId>/<infectedTime>/<strength>", methods=['GET'])
 def getInfectedFootprints(companyId, siteId, memberId, infectedTime, strength):
     if int(siteId) != 0:
-        footprints_ref = db.collection(f"companies/{companyId}/{siteId}/footprints")
+        footprints_ref = db.collection(f"companies/{companyId}/sites/{siteId}/footprints")
     elif int(memberId) != 0:
         footprints_ref = db.collection(f"companies/{companyId}/members/{memberId}/footprints")
     docs = footprints_ref.order_by(u'timestamp').where("timestamp", u">", int(infectedTime)).limit(int(strength)).get()
