@@ -13,22 +13,6 @@ securityDefinitions:
 produces:
   - application/json
 paths:
-  /member:
-    post:
-      summary: Return a dictionary of memberData.
-      operationId: post_setmember
-      security:
-        - api_key: []
-      x-google-backend:
-        path_translation: APPEND_PATH_TO_ADDRESS
-        address: { APP ENGINE DOMAIN NAME }
-        jwt_audience: { IAP Client Id }
-      responses:
-        '200':
-          $ref: '#/responses/SuccessfulResponse'
-        '401':
-          $ref: '#/responses/UnauthorizedError'
-
   /footprint/{companyId}/{memberId}:
     get:
       summary: Return a list of footprintDatas.
