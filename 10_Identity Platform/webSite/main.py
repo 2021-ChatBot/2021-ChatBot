@@ -115,7 +115,15 @@ def signUp():
                         "content": "註冊綁定成功\n"
                                    f"name: {member['name']}\n"
                                    f"email: {member['email']}\n"
-                                   f"lineId: {member['lineId']}"
+                                   f"lineId: {member['lineId']}\n\n"
+                                   f"本系統提供下列功能：\n"
+                                   f"1. 實聯掃碼\n"
+                                   f"2. 我的足跡\n"
+                                   f"3. 我的個資\n"
+                                   f"4. 組織管理\n"
+                                   f"5. 疫調管理\n"
+                                   f"6. 統計報表\n"
+                                   f"請利用主選單，點選需要的服務......"
                     }
                     notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
                     notificationThread.start()
@@ -144,15 +152,36 @@ def myData():
         db.session.commit()
         return redirect("/myData")
 
-    # ----------------------修改個資-----------------------------------------
-
-
+# ----------------------修改個資-----------------------------------------
 @app.route("/myForm", methods=['GET'])
 @auth_required()
 @roles_accepted("customer", "manager", "admin")
 def myForm():
     member = extraction(current_user)
     return render_template('myForm.html', member=member, title="修改個資")
+
+
+# ----------------------退出-----------------------------------------
+@app.route("/quit", methods=['GET'])
+@auth_required()
+@roles_accepted("customer", "manager", "admin")
+def quit():
+    member = extraction(current_user)
+    userDatabase.delete_user(current_user)
+    db.session.commit()
+    importTime = int(time.time() + 28800)
+
+    if member['lineId'] != "":    
+        message = {
+                "lineId": member['lineId'],
+                "messageType": "textTemplate",
+                "content": "已為你辦理退出手續\n"
+                        f"時間: {str(datetime.utcfromtimestamp(importTime).strftime('%Y-%m-%d %H:%M:%S'))}"
+        }
+        notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
+        notificationThread.start()
+
+    return render_template("quit.html",member = member, title = "退出成功")
 
 
 # ----------------------掃碼---------------------------------------------
