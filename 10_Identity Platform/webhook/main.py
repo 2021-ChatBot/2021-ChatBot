@@ -84,7 +84,6 @@ def handle_queryResult(queryResult, lineId):
                 lineBotApi.push_message(lineId, bindHandleMessage)
                 cloudSql.updateLineId(lineId, email)
                 member = cloudSql.query(lineId, email)
-                messages = []
                 bindSuccessMessage = TextSendMessage(
                     text = bindSuccessText + 'name='   + member['name'] + '\n' \
                                            + 'email='  + email          + '\n' \
