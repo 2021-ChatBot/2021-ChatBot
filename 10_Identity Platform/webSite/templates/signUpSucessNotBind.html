@@ -1,0 +1,33 @@
+{% extends "mobileLayout.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block bodyContent %}
+<h1 class="title">{{title}}</h1>
+
+<div class="field">
+    <label for="name" class="label">姓名：{{member['name']}}</label>
+</div>
+
+<div class="field">
+    <label for="email" class="label">Email：{{member['email']}}</label>
+</div>
+
+<div class="field">
+    <label for="lineId" class="label">LineId：{{member['lineId']}}</label>
+</div>
+
+{% if member['role'] == 'customer' %}
+<div class="field">
+    <label for="角色" class="label">角色：顧客</label>
+</div>
+{% elif member['role'] == 'manager' %}
+<div class="field">
+    <label for="角色" class="label">角色：管理者</label>
+</div>
+{% else %}
+<div class="field">
+    <label for="角色" class="label">角色：系統管理員</label>
+</div>
+{% endif %}
+
+<a class="button is-link" href= "{{channel_href}}">加入社群 綁定LineId</a>
+{% endblock %}
