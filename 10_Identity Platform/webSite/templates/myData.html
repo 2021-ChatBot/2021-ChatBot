@@ -15,6 +15,7 @@
     <label for="lineId" class="label">LineId：{{member['lineId']}}</label>
 </div>
 
+
 {% if member['role'] == 'customer' %}
 <div class="field">
     <label for="角色" class="label">角色：顧客</label>
@@ -28,6 +29,24 @@
     <label for="角色" class="label">角色：系統管理員</label>
 </div>
 {% endif %}
-
 <a class="button is-link" href="/myForm">修改</a>
+
+<a class="button is-link" onClick="checkQuit()" href="#">退出</a>
+
+
+<script type="text/javascript">
+ 
+    function checkQuit()
+    {
+        var mymessage = confirm("確定要退出嗎");
+        if(mymessage == true)
+        {
+        window.location.href='/quit';
+        }
+        else if(mymessage == false)
+        {
+        pass;
+        }
+    }
+</script>
 {% endblock %}
