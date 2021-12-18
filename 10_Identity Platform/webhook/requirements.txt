@@ -1,0 +1,5 @@
+line-bot-sdk
+google-cloud-dialogflow
+protobuf-to-dict
+SQLAlchemy==1.3.12
+PyMySQL==0.9.3
