@@ -3,7 +3,8 @@ import os
 #（1）Line Channel
 channelSecret = os.environ ['channelSecret']
 channelAccessToken = os.environ ['channelAccessToken']
-LiffUrl = "[your Liff url]"
+signUpUrl = "[your sign up url]"
+bindingUrl = "[your binding url]"
 
 #（2）Dialogflow 
 projectId = "[your project id]"
