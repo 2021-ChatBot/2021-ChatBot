@@ -98,6 +98,8 @@ def signUp():
     if request.method == 'POST':
         userData = request.form.to_dict()
         try:
+            if userData['lineId'] != "" and lineIdQuery != None:
+                return render_template("text.html", title="註冊失敗 您已經重複註冊") 
             user = userDatabase.create_user(
                 id=str(uuid.uuid4()), email=userData['email'], password=hash_password(userData['password']),
                 name=userData['name'], lineId=userData['lineId'], roles=["customer"]
