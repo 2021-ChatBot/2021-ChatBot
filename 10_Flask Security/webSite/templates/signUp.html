@@ -1,0 +1,44 @@
+{% extends "mobileLayout.html" %}
+{% block title %}註冊{% endblock %}
+{% block bodyContent %}
+<h1 class="title">註冊</h1>
+<script>
+    liff.init({
+        liffId: "{{liffId}}" // config parameter
+    })
+        .then(() => {
+            // Use liff's api
+            liff.getProfile()
+                .then(profile => {
+
+                    const lineId = profile.userId;
+                    document.getElementById("lineId").value = lineId;
+                })
+                .catch((err) => {
+                    console.log('error', err);
+                });
+        })
+        .catch((err) => {
+            console.log(err.code, err.message);
+        });
+</script>
+
+<form action="" method="POST">
+    <label class="label">
+        <div class="field form-inline">
+            姓名：&ensp;<input type="text" class="label" name="name" class="input" required="required" />
+        </div>
+        <div class="field form-inline">
+            email： <input type="text" class="label" name="email" class="input" required="required" />
+        </div>
+        <div class="field form-inline">
+            密碼：&ensp;<input type="password" class="label" name="password" class="input" required="required" />
+        </div>
+        <input type="hidden" name="lineId" id='lineId' class="input" required="required" />
+
+        <div class="field form-inline">
+            <button class="button is-link">註冊</button>
+        </div>
+    </label>
+</form>
+{% endblock %}
