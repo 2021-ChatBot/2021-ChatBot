@@ -1,7 +1,6 @@
 from linebot import LineBotApi
 from linebot.models import TextSendMessage
 from config import channelAccessToken
-from secretManager import access_secret_version
 
 class PushMessage:
     def __init__(self, channelToken=channelAccessToken):

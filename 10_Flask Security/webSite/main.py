@@ -29,6 +29,7 @@ from flask_security import (
         auth_required,
         current_user,
         roles_accepted,
+        roles_required,
         logout_user,
 )
 
@@ -82,8 +83,6 @@ def getUserData(user):
     return member
 # ----------------------------------------------------------------------
 @app.route("/index", methods=['GET'])
-@auth_required()
-@roles_accepted("customer", "manager", "admin")
 def index():
     return render_template("index.html")
 # ----------------------------------------------------------------------
@@ -97,9 +96,10 @@ def signUp():
         return render_template("signUp.html",liffId = liffId)
     if request.method == 'POST':
         userData = request.form.to_dict()
+        lineIdQuery = User.query.filter_by(lineId = userData['lineId']).first()
         try:
-            if userData['lineId'] != "" and lineIdQuery != None:
-                return render_template("text.html", title="註冊失敗 您已經重複註冊") 
+            if lineIdQuery != None and userData['lineId'] != "":
+                return render_template("signUpFail.html", title="註冊失敗 您已經重複註冊") 
             user = userDatabase.create_user(
                 id=str(uuid.uuid4()), email=userData['email'], password=hash_password(userData['password']),
                 name=userData['name'], lineId=userData['lineId'], roles=["customer"]
@@ -111,10 +111,7 @@ def signUp():
             member["companyName"] = requestAPI("GET", "/company/" + companyId)['name']
             publishThread = threading.Thread(target=publish_messages, args=({"member": member},))
             publishThread.start()
-
-            if userData['lineId'] == "" :
-                return render_template("signUpSucessNotBind.html", member=member, channel_href=channel_href, title="已註冊未綁定")
-            else:                    
+            if userData['lineId'] != "" :
                 message = {
                     "lineId": member['lineId'],
                     "messageType": "textTemplate",
@@ -133,9 +130,10 @@ def signUp():
                 }
                 notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
                 notificationThread.start()
-                return render_template("signUpSucess.html",member = member, title="註冊成功")
+
+            return render_template("signUpSucess.html",member = member, title="註冊成功")
         except:
-            return render_template("text.html", title="註冊失敗") 
+            return render_template("signUpFail.html", title="註冊失敗") 
 
 # ----------------------成員綁定-----------------------------------------
 @app.route("/binding", methods=['GET', 'POST'])
@@ -143,7 +141,8 @@ def signUp():
 @roles_accepted("customer", "manager", "admin")
 def binding():
     if request.method == 'GET':
-        return render_template("binding.html",liffId = liffId)
+        member = getUserData(current_user)
+        return render_template("binding.html",member = member,liffId = liffId)
 
     elif request.method == 'POST':
         lineId = request.form.to_dict()['lineId']
@@ -169,7 +168,7 @@ def binding():
         notificationThread = threading.Thread(target=line.pushMessage, args=(message,))
         notificationThread.start()
 
-        return render_template("text.html", title = "綁定成功")
+        return redirect(url_for('index'))
 # ----------------------個人資料-----------------------------------------
 @app.route("/myData", methods=['GET', 'POST'])
 @auth_required()
@@ -197,14 +196,14 @@ def myForm():
 # ----------------------掃碼---------------------------------------------
 @app.route("/newFootprint", methods=['GET'])
 @auth_required()
-@roles_accepted("customer")
+@roles_required("customer")
 def newFootprint():
     return render_template('newFootprint.html', title="實聯掃碼")
 
 # ----------------------寫入掃碼足跡紀錄-----------------------------------
 @app.route("/newFootprint", methods=['POST'])
 @auth_required()
-@roles_accepted("customer")
+@roles_required("customer")
 def setMyFootprint():
     footprintData = json.loads(request.get_data())
     siteIdRegex = re.compile(r'\d\d\d\d \d\d\d\d \d\d\d\d \d\d\d')
@@ -246,7 +245,7 @@ def setMyFootprint():
 # ----------------------------User掃碼足跡紀錄-----------------------------
 @app.route("/myFootprints", methods=['GET'])
 @auth_required()
-@roles_accepted("customer")
+@roles_required("customer")
 def myFootprints():
     member = getUserData(current_user)
     companyName = requestAPI("GET", "/company/" + companyId)['name']
@@ -260,7 +259,7 @@ def myFootprints():
 # ----------------------------我的企業-----------------------------
 @app.route("/myCompany", methods=['GET'])
 @auth_required()
-@roles_accepted("manager")
+@roles_required("manager")
 def myCompany():
     company = requestAPI("GET", "/company/" + companyId)
     sites = requestAPI("GET", "/site/"+ companyId)
@@ -280,7 +279,7 @@ def myCompany():
 @app.route("/mySite", methods=['GET'])
 @app.route("/mySite/<siteId>", methods=['GET'])
 @auth_required()
-@roles_accepted("manager")
+@roles_required("manager")
 def mySite(siteId=None):
     result = {
         'company': requestAPI("GET", "/company/" + companyId),
@@ -293,7 +292,7 @@ def mySite(siteId=None):
 # ----------------------------增修商店------------------------------------
 @app.route("/mySite", methods=['POST'])
 @auth_required()
-@roles_accepted("manager")
+@roles_required("manager")
 def newSite():
     site = request.form.to_dict()
     site['companyId'] = companyId
@@ -307,19 +306,21 @@ def newSite():
     requestAPI("POST", "/site", site)
     return redirect(url_for('myCompany'))
 
+
 # ----------------------------疫情調查設定-----------------------------
 @app.route("/checkFootprints", methods=['GET'])
 @auth_required()
-@roles_accepted("admin")
+@roles_required("admin")
 def checkFootprints():
     companyName = requestAPI("GET", "/company/" + companyId)['name']
     sites = requestAPI("GET", "/site/" + companyId)
     return render_template('checkFootprints.html', sites=sites, companyName=companyName, title="疫情調查")
 
+
 # ----------------------------疫情調查結果-----------------------------
 @app.route("/infectedFootprints", methods=['POST'])
 @auth_required()
-@roles_accepted("admin")
+@roles_required("admin")
 def infectedFootprints():
     event = request.form.to_dict()
     event['companyId'] = companyId

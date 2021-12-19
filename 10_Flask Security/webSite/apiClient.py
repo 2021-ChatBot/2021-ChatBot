@@ -17,6 +17,5 @@ def requestAPI(method="POST", route="", data={}, headers={"x-api-key": apiKey}):
     elif response.status_code != 200 :
         return abort(response.status_code, response.text)
         
-    print(response.text)
     result = json.loads(response.text)["response"]
     return result
