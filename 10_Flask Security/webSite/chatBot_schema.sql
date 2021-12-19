@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS `user` (
 	`lineId`	VARCHAR(80),
 	PRIMARY KEY(`id`),
 	UNIQUE(`email`),
-	UNIQUE(`lineId`),
 	`active`	BOOLEAN,
 	CHECK(`active` IN (0, 1))
 );
