@@ -24,13 +24,11 @@ from flask_security import (
         RoleMixin,
         UserMixin,
         SQLAlchemyUserDatastore,
-        login_required,
         login_user,
         auth_required,
         current_user,
         roles_accepted,
         roles_required,
-        logout_user,
 )
 
 line = PushMessage()
@@ -81,19 +79,15 @@ def getUserData(user):
         member[attr] = getattr(user, attr)
     member["role"] = user.roles[0].name
     return member
-# ----------------------------------------------------------------------
-@app.route("/index", methods=['GET'])
+# -----------------------index--------------------------------------------
+@app.route("/", methods=['GET'])
 def index():
     return render_template("index.html")
-# ----------------------------------------------------------------------
-@app.route("/", methods=['GET'])
-def liff():
-    return render_template("liff.html",liffId = liffId)
 # ----------------------成員註冊-----------------------------------------
 @app.route("/signUp", methods=['GET', 'POST'])
 def signUp():
     if request.method == 'GET':
-        return render_template("signUp.html",liffId = liffId)
+        return render_template("signUp.html",liffId = liffIdForSignUp)
     if request.method == 'POST':
         userData = request.form.to_dict()
         lineIdQuery = User.query.filter_by(lineId = userData['lineId']).first()
@@ -142,7 +136,7 @@ def signUp():
 def binding():
     if request.method == 'GET':
         member = getUserData(current_user)
-        return render_template("binding.html",member = member,liffId = liffId)
+        return render_template("binding.html",member = member,liffId = liffIdForBinding)
 
     elif request.method == 'POST':
         lineId = request.form.to_dict()['lineId']
@@ -306,7 +300,6 @@ def newSite():
     requestAPI("POST", "/site", site)
     return redirect(url_for('myCompany'))
 
-
 # ----------------------------疫情調查設定-----------------------------
 @app.route("/checkFootprints", methods=['GET'])
 @auth_required()
@@ -315,7 +308,6 @@ def checkFootprints():
     companyName = requestAPI("GET", "/company/" + companyId)['name']
     sites = requestAPI("GET", "/site/" + companyId)
     return render_template('checkFootprints.html', sites=sites, companyName=companyName, title="疫情調查")
-
 
 # ----------------------------疫情調查結果-----------------------------
 @app.route("/infectedFootprints", methods=['POST'])

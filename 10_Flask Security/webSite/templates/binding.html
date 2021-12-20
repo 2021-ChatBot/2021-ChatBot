@@ -1,7 +1,7 @@
 {% extends "mobileLayout.html" %}
-{% block title %}請確認綁定資訊{% endblock %}
+{% block title %}請確認綁定帳號{% endblock %}
 {% block bodyContent %}
-<h1 class="title">請確認綁定資訊</h1>
+<h1 class="title">請確認綁定帳號</h1>
 <script>
     liff.init({
         liffId: "{{liffId}}"
@@ -12,9 +12,8 @@
                 .then(profile => {
 
                     const lineId = profile.userId;
-                    document.getElementById("lineid").value = lineId;
-                    document.getElementById("lineId").setAttribute("value",lineId); 
-                    document.getElementById("lineid").innerHTML= lineId;                                       
+                    document.getElementById("lineid").textContent = lineId;
+                    document.getElementById("lineId").value = lineId;                                     
                 })
                 .catch((err) => {
                     console.log('error', err);
