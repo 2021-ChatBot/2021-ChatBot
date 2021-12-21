@@ -8,8 +8,7 @@ apiKey = access_secret_version("[your API gateway Key resource id]", version)
 apiUrl = access_secret_version("[your API gateway url resource id]", version)
 
 # ( 2 ) Line Channel
-liffIdForSignUp = access_secret_version("[your liffId for signUp resource id]", version)
-liffIdForBinding = access_secret_version("[your liffId for binding resource id]", version)
+liffId = access_secret_version("[your liffId resource id]", version)
 channelAccessToken = access_secret_version("[your channelAccessToken resource id]", version)
 
 # ( 3 ) Data Studio report URL

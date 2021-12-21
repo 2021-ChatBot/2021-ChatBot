@@ -82,12 +82,12 @@ def getUserData(user):
 # -----------------------index--------------------------------------------
 @app.route("/", methods=['GET'])
 def index():
-    return render_template("index.html")
+    return render_template("index.html", liffId = liffId)
 # ----------------------成員註冊-----------------------------------------
 @app.route("/signUp", methods=['GET', 'POST'])
 def signUp():
     if request.method == 'GET':
-        return render_template("signUp.html",liffId = liffIdForSignUp)
+        return render_template("signUp.html",liffId = liffId)
     if request.method == 'POST':
         userData = request.form.to_dict()
         lineIdQuery = User.query.filter_by(lineId = userData['lineId']).first()
@@ -136,7 +136,7 @@ def signUp():
 def binding():
     if request.method == 'GET':
         member = getUserData(current_user)
-        return render_template("binding.html",member = member,liffId = liffIdForBinding)
+        return render_template("binding.html",member = member,liffId = liffId)
 
     elif request.method == 'POST':
         lineId = request.form.to_dict()['lineId']

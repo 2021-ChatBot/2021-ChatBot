@@ -16,8 +16,14 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 </head>
 <body>
+    <script>
+        liff.init({
+            liffId: "{{liffId}}" // config parameter
+        })
+    </script>
 
     <nav class="navbar navbar-expand-sm bg-secondary navbar-dark">
         <div class="navbar-header">
