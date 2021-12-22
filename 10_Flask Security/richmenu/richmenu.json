@@ -16,9 +16,7 @@
       },
       "action": {
         "type": "uri",
-        "uri" : "/newFootprint",
-        "data": "?openExternalBrowser=1"
-        
+        "uri" : "/newFootprint?openExternalBrowser=1"
       }
     },
     {
@@ -30,8 +28,7 @@
       },
       "action": {
         "type": "uri",
-        "uri" : "/myFootprints",
-        "data": "?openExternalBrowser=1"
+        "uri" : "/myFootprints"
       }
     },
     {
@@ -43,8 +40,7 @@
       },
       "action": {
         "type": "uri",
-        "uri": "/myData",
-        "data": "?openExternalBrowser=1"
+        "uri": "/myData"
       }
     },
     {
@@ -56,8 +52,7 @@
       },
       "action": {
         "type": "uri",
-        "uri": "/myCompany",
-        "data": "?openExternalBrowser=1"
+        "uri": "/myCompany"
       }
     },
     {
@@ -69,8 +64,7 @@
       },
       "action": {
         "type": "uri",
-        "uri" : "/checkFootprints",
-        "data": "?openExternalBrowser=1"
+        "uri" : "/checkFootprints"
       }
     },
     {
@@ -82,8 +76,7 @@
       },
       "action": {        
         "type": "uri",
-        "uri" : "/report",
-        "data": "?openExternalBrowser=1"
+        "uri" : "/report"
       }
     }
  ]
