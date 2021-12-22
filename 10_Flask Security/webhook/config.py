@@ -14,5 +14,5 @@ languageCode = "zh-TW"
 usersTableName = "user"
 dbName = "[your database name]"
 dbUser = "[your user name]"
-dbPassword = "[your database passward]"
+dbPassword = os.environ ['dbPassword']
 connectionName = "[your database connection name]"
