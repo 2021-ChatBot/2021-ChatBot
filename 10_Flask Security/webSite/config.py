@@ -17,7 +17,7 @@ report = "[your data studio embedded url]"
 # ( 4 ) Flask 
 flaskConfig={
     'DEBUG' : False,
-    'SECRET_KEY' : access_secret_version("[your SECRET_KEY resource id", version),
+    'SECRET_KEY' : access_secret_version("[your SECRET_KEY resource id]", version),
     'SECURITY_PASSWORD_HASH' : "argon2",
     'SECURITY_PASSWORD_SALT' : access_secret_version("[your SECURITY_PASSWORD_SALT resource id]", version),
     'SQLALCHEMY_TRACK_MODIFICATIONS' : True,
@@ -25,9 +25,9 @@ flaskConfig={
 }
 
 # ( 4 ) Cloud SQL
-CONNECT_NAME = access_secret_version("[your CONNECT_NAME resource id]", version)
-DBNAME = access_secret_version("[your DBNAME resource id]", version)
-USER_NAME = "user"
+CONNECT_NAME = "[your CONNECT_NAME resource id]"
+DBNAME = "[your DBNAME resource id]"
+USER_NAME = "[your user name]"
 PASSWORD = access_secret_version("[your PASSWORD resource id]", version)
 
 # ( 4 ) Pub / Sub
