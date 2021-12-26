@@ -1,0 +1,12 @@
+Flask
+line-bot-sdk
+firebase_admin
+google-cloud-pubsub
+google-cloud-secret-manager==2.1.0
+Flask-Security-Too==4.1.0
+Flask-SQLAlchemy
+SQLAlchemy
+argon2_cffi
+google-oauth
+google-auth
+pymysql

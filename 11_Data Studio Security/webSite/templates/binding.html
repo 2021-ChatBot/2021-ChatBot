@@ -1,0 +1,45 @@
+{% extends "mobileLayout.html" %}
+{% block title %}請確認綁定帳號{% endblock %}
+{% block bodyContent %}
+<h1 class="title">請確認綁定帳號</h1>
+<script>
+    liff.init({
+        liffId: "{{liffId}}"
+    })
+        .then(() => {
+            // Use liff's api
+            liff.getProfile()
+                .then(profile => {
+
+                    const lineId = profile.userId;
+                    document.getElementById("lineid").textContent = lineId;
+                    document.getElementById("lineId").value = lineId;                                     
+                })
+                .catch((err) => {
+                    console.log('error', err);
+                });
+        })
+        .catch((err) => {
+            console.log(err.code, err.message);
+        });
+</script>
+
+<form action="" method="POST">
+    <label class="label">
+        <div class="field">
+            <label for="name" class="label">姓名：{{member['name']}}</label>
+        </div>
+        
+        <div class="field">
+            <label for="email" class="label">Email：{{member['email']}}</label>
+        </div>
+        <div class="field">
+            <label for="lineId" class="label">lineId：<em id='lineid'></em></label>
+            <input type="hidden" name="lineId" id='lineId' class="input" required="required" value=""/>
+        </div>
+        <div class="field form-inline">
+            <button class="button is-link">確認</button>
+        </div>
+    </label>
+</form>
+{% endblock %}
