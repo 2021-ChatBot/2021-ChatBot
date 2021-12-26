@@ -101,10 +101,19 @@ def signUp():
             db.session.commit()
             login_user(user)
             member = getUserData(user)
-            # - pubsub                
+            # - pubsub  
+            permission = {
+                'companyName' : "",
+                'email'       : member['email'],
+                'timestamp'   : int(time.time() + 28800)
+            }
+            publishThread1 = threading.Thread(target=publish_messages, args=({"permission": permission},))
+            publishThread1.start()
+
             member["companyName"] = requestAPI("GET", "/company/" + companyId)['name']
-            publishThread = threading.Thread(target=publish_messages, args=({"member": member},))
-            publishThread.start()
+            publishThread2 = threading.Thread(target=publish_messages, args=({"member": member},))
+            publishThread2.start()
+            
             if userData['lineId'] != "" :
                 message = {
                     "lineId": member['lineId'],
