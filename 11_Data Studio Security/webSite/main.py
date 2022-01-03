@@ -406,7 +406,13 @@ def infectedFootprints():
 @auth_required()
 @roles_accepted("manager", "admin")
 def myReport():
-    params = "?params=%7B%22infected_companyId%22 : %22" + companyId + "%22, %22footprint_companyId%22 : %22" + companyId + "%22%7D"
+    role = current_user.roles[0].name
+    if role == "manager":
+        companyName = requestAPI("GET", "/company/" + companyId)['name']
+        params = "?params=%7B%22infected_companyName%22 : %22" + companyName + "%22, %22footprint_companyName%22 : %22" + companyName + "%22%7D"
+    elif role == "admin":
+        companyName = requestAPI("GET", "/company/" + companyId)['name']
+        params = "?params=%7B%22infected_companyName%22 : %22ALL%22, %22footprint_companyName%22 : %22ALL%22%7D"
     return redirect(reportUrl + params)
 
 
